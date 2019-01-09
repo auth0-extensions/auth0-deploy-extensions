@@ -1,9 +1,6 @@
-# Auth0 Bitbucket Deployments
+# Auth0 Deploy Extensions
 
-This extension makes it possible to deploy Rules and Database Connection scripts from Bitbucket to Auth0.
-
-## Warning
-Since v2.3, this extension is using new version of `auth0-source-control-extension-tools`, which is incompatible with node 4. The extension will work on node 8 runtime only. Please, read this [Migration Guide](https://auth0.com/docs/migrations/guides/extensibility-node8) for more information.
+These extensions makes it possible to deploy Rules and Database Connection scripts from Bitbucket, Github, Gitlab or VisualStudio to Auth0.
 
 ## Usage
 There is more extensive documentation online for how the files are expected to be laid out to work with the source control configuration utilities [here](https://auth0.com/docs/extensions/bitbucket-deploy).
