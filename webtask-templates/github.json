@@ -1,0 +1,59 @@
+{
+  "title": "GitHub Deployments",
+  "name": "auth0-github-deploy",
+  "version": "2.5.0",
+  "preVersion": "2.4.0",
+  "author": "auth0",
+  "description": "This extension gives Auth0 customers the possibility to deploy Pages, Rules and Custom Database Connections from GitHub.",
+  "type": "application",
+  "category": "source_control",
+  "docsUrl": "https://auth0.com/docs/extensions/github-deploy",
+  "logoUrl": "https://cdn.auth0.com/extensions/auth0-github-deploy/assets/logo.svg",
+  "initialUrlPath": "/login",
+  "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Pages, Rules and Database Connection scripts from being deployed from GitHub to Auth0",
+  "repository": "https://github.com/auth0-extensions/auth0-github-deploy",
+  "keywords": [
+    "auth0",
+    "extension",
+    "github"
+  ],
+  "auth0": {
+    "createClient": true,
+    "onUninstallPath": "/.extensions/on-uninstall",
+    "scopes": "read:client_grants create:client_grants delete:client_grants update:client_grants read:clients update:clients delete:clients create:clients read:client_keys update:client_keys delete:client_keys create:client_keys read:connections update:connections delete:connections create:connections read:resource_servers update:resource_servers delete:resource_servers create:resource_servers read:rules update:rules delete:rules create:rules read:rules_configs update:rules_configs delete:rules_configs read:email_provider update:email_provider delete:email_provider create:email_provider read:tenant_settings update:tenant_settings read:grants delete:grants read:guardian_factors update:guardian_factors read:email_templates create:email_templates update:email_templates"
+  },
+  "secrets": {
+    "REPOSITORY": {
+      "example": "myorganization/myrepo",
+      "description": "The repository from which you want to deploy rules and database scripts",
+      "required": true
+    },
+    "BRANCH": {
+      "description": "The branch we should monitor for commits",
+      "default": "master",
+      "required": true
+    },
+    "HOST": {
+      "description": "GitHub Enterprise host, leave empty for github.com",
+      "example": "github.my-company.com"
+    },
+    "API_PATH": {
+      "description": "GitHub Enterprise API path prefix, leave empty for github.com",
+      "example": "/api/v3"
+    },
+    "TOKEN": {
+      "description": "Your personal access token for GitHub",
+      "required": true,
+      "type": "password"
+    },
+    "BASE_DIR": {
+      "example": "settings/tenant",
+      "description": "Path to your tenant settings directories"
+    },
+    "SLACK_INCOMING_WEBHOOK_URL": {
+      "example": "https://hooks.slack.com/services/...",
+      "description": "Webhook URL for Slack used to notify you of successful and failed deployments",
+      "required": false
+    }
+  }
+}

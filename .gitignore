@@ -1,0 +1,10 @@
+.DS_Store
+assets/app/*
+node_modules
+npm-debug.log
+.idea
+.nyc_output
+server/config.json
+server/data.json
+dist
+webtask.json

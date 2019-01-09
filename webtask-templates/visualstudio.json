@@ -1,0 +1,121 @@
+{
+  "title": "Visual Studio Team Services Deployments",
+  "name": "auth0-visualstudio-deploy",
+  "version": "2.3.1",
+  "author": "auth0",
+  "description": "This extension gives Auth0 customers the possibility to deploy Hosted Pages, Rules and Custom Database Connections from Visual Studio Team Services.",
+  "type": "application",
+  "docsUrl": "https://auth0.com/docs/extensions/visual-studio-team-services-deploy",
+  "logoUrl": "https://cdn.auth0.com/extensions/auth0-visualstudio-deploy/assets/logo.svg",
+  "initialUrlPath": "/admins/login",
+  "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Hosted Pages, Rules and Database Connection scripts from being deployed from Visual Studio Team Services to Auth0",
+  "repository": "https://github.com/auth0-extensions/auth0-visualstudio-deploy",
+  "keywords": [
+    "auth0",
+    "extension",
+    "visualstudio"
+  ],
+  "auth0": {
+    "createClient": true,
+    "onUninstallPath": "/.extensions/on-uninstall",
+    "scopes": "read:client_grants create:client_grants delete:client_grants update:client_grants read:clients update:clients delete:clients create:clients read:client_keys update:client_keys delete:client_keys create:client_keys read:connections update:connections delete:connections create:connections read:resource_servers update:resource_servers delete:resource_servers create:resource_servers read:rules update:rules delete:rules create:rules read:rules_configs update:rules_configs delete:rules_configs read:email_provider update:email_provider delete:email_provider create:email_provider read:tenant_settings update:tenant_settings read:grants delete:grants read:guardian_factors update:guardian_factors read:email_templates create:email_templates update:email_templates"
+  },
+  "secrets": {
+    "TYPE": {
+      "description": "Type of repository",
+      "type": "select",
+      "required": true,
+      "default": "git",
+      "allowMultiple": false,
+      "options": [
+        {
+          "value": "git",
+          "text": "Git"
+        },
+        {
+          "value": "tfvc",
+          "text": "TFVC"
+        }
+      ]
+    },
+    "REPOSITORY": {
+      "example": "MyFirstProject",
+      "description": "The project from which you want to deploy rules and database scripts",
+      "required": true
+    },
+    "BRANCH": {
+      "description": "The branch we should monitor for commits",
+      "default": "master",
+      "required": true,
+      "visibleIf": {
+        "TYPE": "git"
+      }
+    },
+    "PATH": {
+      "example": "$/myproject/somepath",
+      "description": "The path we should monitor for commits",
+      "visibleIf": {
+        "TYPE": "tfvc"
+      }
+    },
+    "INSTANCE": {
+      "example": "INSTANCE.visualstudio.com",
+      "description": "Your Visual Studio Team Services instance name (without .visualstudio.com)",
+      "required": true
+    },
+    "COLLECTION": {
+      "description": "Your visualstudio collection",
+      "default": "DefaultCollection",
+      "required": true
+    },
+    "USERNAME": {
+      "description": "Your Visual Studio Team Services username",
+      "required": true
+    },
+    "AUTH_METHOD": {
+      "description": "You can choose between PAT and Basic (Alternate authentication credentials)",
+      "required": true,
+      "type": "select",
+      "default": "pat",
+      "allowMultiple": false,
+      "options": [
+        {
+          "value": "pat",
+          "text": "Personal Access Token"
+        },
+        {
+          "value": "basic",
+          "text": "Basic"
+        }
+      ]
+    },
+    "PASSWORD": {
+      "description": "Your Visual Studio password (Alternate authentication credentials)",
+      "required": true,
+      "type": "password",
+      "visibleIf": {
+        "AUTH_METHOD": "basic"
+      }
+    },
+    "TOKEN": {
+      "description": "Your personal access token for Visual Studio Team Services",
+      "required": true,
+      "type": "password",
+      "visibleIf": {
+        "AUTH_METHOD": "pat"
+      }
+    },
+    "BASE_DIR": {
+      "example": "settings/tenant",
+      "description": "Path to your tenant settings directories",
+      "visibleIf": {
+        "TYPE": "git"
+      }
+    },
+    "SLACK_INCOMING_WEBHOOK_URL": {
+      "example": "https://hooks.slack.com/services/...",
+      "description": "Webhook URL for Slack used to notify you of successful and failed deployments",
+      "required": false
+    }
+  }
+}

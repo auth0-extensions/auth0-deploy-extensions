@@ -1,0 +1,56 @@
+{
+  "title": "GitLab Deployments",
+  "name": "auth0-gitlab-deploy",
+  "version": "2.6.0",
+  "preVersion": "2.5.0",
+  "author": "auth0",
+  "description": "This extension gives Auth0 customers the possibility to deploy Hosted Pages, Rules and Custom Database Connections from GitLab.",
+  "type": "application",
+  "category": "source_control",
+  "docsUrl": "https://auth0.com/docs/extensions/gitlab-deploy",
+  "logoUrl": "https://cdn.auth0.com/extensions/auth0-gitlab-deploy/assets/logo.svg",
+  "initialUrlPath": "/login",
+  "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Hosted Pages,  Rules and Database Connection scripts from being deployed from GitLab to Auth0",
+  "repository": "https://github.com/auth0-extensions/auth0-gitlab-deploy",
+  "keywords": [
+    "auth0",
+    "extension",
+    "gitlab"
+  ],
+  "auth0": {
+    "createClient": true,
+    "onUninstallPath": "/.extensions/on-uninstall",
+    "scopes": "read:client_grants create:client_grants delete:client_grants update:client_grants read:clients update:clients delete:clients create:clients read:client_keys update:client_keys delete:client_keys create:client_keys read:connections update:connections delete:connections create:connections read:resource_servers update:resource_servers delete:resource_servers create:resource_servers read:rules update:rules delete:rules create:rules read:rules_configs update:rules_configs delete:rules_configs read:email_provider update:email_provider delete:email_provider create:email_provider read:tenant_settings update:tenant_settings read:grants delete:grants read:guardian_factors update:guardian_factors read:email_templates create:email_templates update:email_templates"
+  },
+  "secrets": {
+    "REPOSITORY": {
+      "example": "myorganization/myrepo",
+      "description": "The repository from which you want to deploy rules and database scripts",
+      "required": true
+    },
+    "BRANCH": {
+      "description": "The branch we should monitor for commits",
+      "default": "master",
+      "required": true
+    },
+    "URL": {
+      "description": "The url of GitLab instance",
+      "default": "https://gitlab.com",
+      "required": true
+    },
+    "TOKEN": {
+      "description": "Your personal access token for GitLab",
+      "required": true,
+      "type": "password"
+    },
+    "BASE_DIR": {
+      "example": "settings/tenant",
+      "description": "Path to your tenant settings directories"
+    },
+    "SLACK_INCOMING_WEBHOOK_URL": {
+      "example": "https://hooks.slack.com/services/...",
+      "description": "Webhook URL for Slack used to notify you of successful and failed deployments",
+      "required": false
+    }
+  }
+}
