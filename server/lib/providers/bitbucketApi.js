@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import async from 'async';
 import request from 'request';
-import extend from 'deep-extend';
 
 export default class Bitbucket {
   constructor(options) {
@@ -9,7 +8,7 @@ export default class Bitbucket {
       return new Bitbucket(options);
     }
 
-    this.options = extend({
+    this.options = Object.assign({
       user_name: null,
       password: null,
       rest_base: '',
