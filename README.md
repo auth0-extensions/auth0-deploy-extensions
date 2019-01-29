@@ -15,6 +15,8 @@ repository =>
     client1-name.json
     client1-name.meta.json # if specifying client grants
     my-other-client-name.json
+  grants
+    client1-api.json
   resource-servers
     resource server 1.json
     some other resource server.json
@@ -42,16 +44,16 @@ The name of the file is the name of the client that is created or updated.
 
 In the .json file you can put the same json you would put when using the Management API for creating clients.  It will only try to keep the fields specified inline with what is configured already.  If a client doesn't exist yet, it will create it.
 
-To specify client grants, you must specify the following in the metadata file.  (e.g. client1-name.meta.json)
 
+##### Clients Grants
+In the .json file you can specify client grants options, like this:
 ```
 {
-  "grants": {
-    "Resource server audience": [
-      "scope1",
-      "scope2"
-    ]
-  }
+  "client_id": "client1",
+  "audience": "https://myapp.example.com/api/v1",
+  "scope": [
+    "update:account"
+  ]
 }
 ```
 
