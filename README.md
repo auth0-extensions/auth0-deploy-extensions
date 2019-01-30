@@ -46,7 +46,7 @@ In the .json file you can put the same json you would put when using the Managem
 
 
 ##### Clients Grants
-In the .json file you can specify client grants options, like this:
+In the .json file you can specify client grants options, the name of the file does not matter. Example:
 ```
 {
   "client_id": "client1",
