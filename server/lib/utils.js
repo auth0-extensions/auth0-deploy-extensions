@@ -4,6 +4,7 @@ import Promise from 'bluebird';
 import { ArgumentError } from 'auth0-extension-tools';
 import { constants } from 'auth0-source-control-extension-tools';
 
+import { Decipher } from './decipher';
 import config from './config';
 import logger from './logger';
 
@@ -307,7 +308,14 @@ const unifyData = (assets) => {
     }
   });
 
-  return result;
+  if (config('ENABLE_CIPHER') === true || config('ENABLE_CIPHER') === 'true') {
+    const decipher = new Decipher(config('EXTENSION_SECRET'));
+    decipher.prepareData(result);
+    return decipher.processData()
+      .then(() => result);
+  }
+
+  return Promise.resolve(result);
 };
 
 /*

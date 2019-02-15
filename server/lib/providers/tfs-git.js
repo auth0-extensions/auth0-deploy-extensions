@@ -318,7 +318,7 @@ export const getChanges = ({ repositoryId, branch }) =>
         };
 
         return Promise.props(promises)
-          .then((result) => resolve(utils.unifyData(result)));
+          .then((result) => utils.unifyData(result));
       })
       .catch(e => reject(e));
   });

@@ -372,7 +372,7 @@ export const getChanges = ({ project, changesetId }) =>
         };
 
         return Promise.props(promises)
-          .then((result) => resolve(utils.unifyData(result)));
+          .then((result) => utils.unifyData(result));
       })
       .catch(e => reject(e));
   });

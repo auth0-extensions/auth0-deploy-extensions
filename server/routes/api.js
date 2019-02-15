@@ -6,6 +6,8 @@ import rules from './rules';
 import resourceServers from './resourceServers';
 import deploy from '../lib/deploy';
 import config from '../lib/config';
+import { Cipher } from '../lib/decipher';
+
 
 const { getOptions } = require(`../lib/providers/${process.env.A0EXT_PROVIDER}`);
 
@@ -18,6 +20,7 @@ const setNotified = (storage) =>
     .then(data => storage.write(data));
 
 export default (storage) => {
+  const cipher = new Cipher(config('EXTENSION_SECRET'));
   const api = express.Router(); // eslint-disable-line new-cap
   api.use(middlewares.authenticateAdmins({
     credentialsRequired: true,
@@ -89,6 +92,11 @@ export default (storage) => {
     getOptions(req)
       .then(options => deploy(storage, req.auth0, options))
       .then(stats => res.json(stats))
+      .catch(next));
+
+  api.post('/cipher', (req, res, next) =>
+    cipher.encrypt(req.body.text)
+      .then(result => res.json({ result }))
       .catch(next));
 
   return api;

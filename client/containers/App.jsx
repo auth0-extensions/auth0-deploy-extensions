@@ -5,9 +5,37 @@ import { logout } from '../actions/auth';
 import Header from '../components/Header';
 
 import RequireAuthentication from './RequireAuthentication';
-import { ConfigContainer, DeploymentsContainer, RulesContainer, ResourceServersContainer } from './';
+import { ConfigContainer, DeploymentsContainer, RulesContainer, ResourceServersContainer, CipherContainer } from './';
 
 class App extends Component {
+  renderCipherTab(activeTab) {
+    if (window.config.ENABLE_CIPHER) {
+      return (
+        <li className={activeTab === 'cipher' ? 'active' : ''}>
+          <a data-toggle="tab" href="#cipher">
+            <span className="tab-title">
+              Secrets Encryption Tool
+            </span>
+          </a>
+        </li>
+      );
+    }
+
+    return '';
+  }
+
+  renderCipherContainer(activeTab) {
+    if (window.config.ENABLE_CIPHER) {
+      return (
+        <div id="cipher" className={activeTab === 'cipher' ? 'tab-pane active' : 'tab-pane'}>
+          <CipherContainer />
+        </div>
+      );
+    }
+
+    return '';
+  }
+
   render() {
     const activeTab = this.props.activeTab;
     return (
@@ -59,6 +87,7 @@ class App extends Component {
                         </span>
                       </a>
                     </li>
+                    {this.renderCipherTab(activeTab)}
                   </ul>
                 </div>
                 <div id="content-area" className="tab-content">
@@ -74,6 +103,7 @@ class App extends Component {
                   <div id="resourceServers" className={activeTab === 'resourceServers' ? 'tab-pane active' : 'tab-pane'}>
                     <ResourceServersContainer />
                   </div>
+                  {this.renderCipherContainer(activeTab)}
                 </div>
               </div>
             </section>
