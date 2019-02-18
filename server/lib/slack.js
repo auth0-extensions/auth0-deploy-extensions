@@ -9,9 +9,11 @@ const createPayload = (report, extensionUrl) => {
     attachments: []
   };
 
+  const providerName = process.env.A0EXT_PROVIDER.charAt(0).toUpperCase() + process.env.A0EXT_PROVIDER.slice(1);
+
   const template = {
-    fallback: 'Bitbucket to Auth0 Deployment',
-    text: 'Bitbucket to Auth0 Deployment',
+    fallback: `${providerName} to Auth0 Deployment`,
+    text: `${providerName} to Auth0 Deployment`,
     fields: [
       { title: 'Repository', value: report.repository, short: true },
       { title: 'Branch', value: report.branch, short: true },
@@ -54,7 +56,7 @@ const createPayload = (report, extensionUrl) => {
   return msg;
 };
 
-export default function (report, extensionUrl, hook) {
+export default function(report, extensionUrl, hook) {
   if (!hook) {
     return Promise.resolve();
   }
