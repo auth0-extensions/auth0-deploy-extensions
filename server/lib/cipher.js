@@ -1,8 +1,16 @@
 const magic = require('auth0-magic');
 
-export class Decipher {
-  constructor(sk) {
-    this.sk = sk;
+export default class Cipher {
+  constructor(password) {
+    const pBuff = Buffer.from(password);
+    const pLength = pBuff.length;
+    const pArr = [ pBuff ];
+
+    for (let i = pLength; i <= 32; i += pLength) {
+      pArr.push(pBuff);
+    }
+
+    this.sk = Buffer.concat(pArr, 32);
     this.promises = [];
   }
 
@@ -45,12 +53,6 @@ export class Decipher {
 
   processData() {
     return Promise.all(this.promises);
-  }
-}
-
-export class Cipher {
-  constructor(sk) {
-    this.sk = sk;
   }
 
   encrypt(text) {

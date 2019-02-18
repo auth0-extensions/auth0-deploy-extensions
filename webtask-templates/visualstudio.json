@@ -131,6 +131,13 @@
         }
       ]
     },
+    "CIPHER_PASSWORD": {
+      "required": true,
+      "description": "Password for encode/decode secrets",
+      "visibleIf": {
+        "ENABLE_CIPHER": "true"
+      }
+    },
     "SLACK_INCOMING_WEBHOOK_URL": {
       "example": "https://hooks.slack.com/services/...",
       "description": "Webhook URL for Slack used to notify you of successful and failed deployments",
