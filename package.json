@@ -1,6 +1,6 @@
 {
   "name": "auth0-deploy-extensions",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Auth0 Deployment Extensions",
   "engines": {
     "node": "5.9.0"
