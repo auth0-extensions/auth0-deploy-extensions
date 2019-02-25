@@ -32,6 +32,7 @@
       "async@2.1.2",
       "auth0-extension-tools@1.3.2",
       "auth0-source-control-extension-tools@3.1.4",
+      "auth0-magic@2.3.0",
       "bluebird@3.4.6",
       "compression@1.4.4",
       "delegates@0.1.0",
@@ -73,7 +74,7 @@
     ],
     "settings": {
       "A0EXT_CLIENT_VERSION": {
-        "default": "1.0.0"
+        "default": "1.2.0"
       }
     }
   },
