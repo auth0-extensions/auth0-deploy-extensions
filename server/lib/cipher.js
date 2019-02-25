@@ -2,21 +2,13 @@ const magic = require('auth0-magic');
 
 export default class Cipher {
   constructor(password) {
-    const pBuff = Buffer.from(password);
-    const pLength = pBuff.length;
-    const pArr = [ pBuff ];
-
-    for (let i = pLength; i <= 32; i += pLength) {
-      pArr.push(pBuff);
-    }
-
-    this.sk = Buffer.concat(pArr, 32);
+    this.password = password;
     this.promises = [];
   }
 
   decrypt(data) {
     const [ ciphertext, nonce ] = data.replace('[!cipher]', '').replace('[rehpic!]', '').split('-');
-    return magic.decrypt.aead(this.sk, ciphertext, nonce)
+    return magic.pwdDecrypt.aead(this.password, ciphertext, nonce)
       .then(plaintext => ({ original: data, plain: plaintext.toString('utf8') }));
   }
 
@@ -40,6 +32,7 @@ export default class Cipher {
   }
 
   prepareData(data) {
+    if (!data) return;
     Object.keys(data).forEach((key) => {
       if (typeof data[key] === 'string') {
         this.promises.push(this.decryptString(data[key]).then((decrypted) => {
@@ -56,7 +49,7 @@ export default class Cipher {
   }
 
   encrypt(text) {
-    return magic.encrypt.aead(text, this.sk)
+    return magic.pwdEncrypt.aead(text, this.password)
       .then(output => `[!cipher]${output.ciphertext.toString('hex')}-${output.nonce.toString('hex')}[rehpic!]`);
   }
 }

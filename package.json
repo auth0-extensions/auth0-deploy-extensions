@@ -18,7 +18,7 @@
     "test:clean": "rimraf ./coverage && rimraf ./.nyc_output",
     "test:pre": "npm run test:clean",
     "test:watch": "npm run test:pre && cross-env NODE_ENV=test mocha tests/mocha.js ./tests/**/*.tests.js --watch",
-    "test": "npm run test:pre && cross-env NODE_ENV=test nyc mocha tests/mocha.js ./tests/**/*.tests.js"
+    "test": "npm run test:pre && cross-env NODE_ENV=test cross-env A0EXT_PROVIDER=github nyc mocha tests/mocha.js ./tests/**/*.tests.js"
   },
   "keywords": [
     "auth0",
@@ -83,7 +83,7 @@
     "auth0-extension-express-tools": "^1.1.9",
     "auth0-extension-tools": "1.3.2",
     "auth0-extension-ui": "^1.0.1",
-    "auth0-magic": "^2.2.0",
+    "auth0-magic": "^2.3.0",
     "auth0-oauth2-express": "^1.1.8",
     "auth0-source-control-extension-tools": "^3.1.4",
     "axios": "^0.15.0",

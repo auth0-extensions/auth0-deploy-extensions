@@ -268,7 +268,7 @@ const unifyItem = (item, type) => {
 
       _.forEach(item.scripts, (script) => { customScripts[script.name] = script.scriptFile; });
 
-      if (item.scripts || item.scripts.length) {
+      if (item.scripts && item.scripts.length) {
         options.customScripts = customScripts;
         options.enabledDatabaseCustomization = true;
       }
