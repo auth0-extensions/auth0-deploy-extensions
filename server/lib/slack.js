@@ -9,7 +9,7 @@ const createPayload = (report, extensionUrl) => {
     attachments: []
   };
 
-  const providerName = process.env.A0EXT_PROVIDER.charAt(0).toUpperCase() + process.env.A0EXT_PROVIDER.slice(1);
+  const providerName = _.capitalize(process.env.A0EXT_PROVIDER);
 
   const template = {
     fallback: `${providerName} to Auth0 Deployment`,

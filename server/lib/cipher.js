@@ -3,7 +3,6 @@ const magic = require('auth0-magic');
 export default class Cipher {
   constructor(password) {
     this.password = password;
-    this.promises = [];
   }
 
   decrypt(data) {
@@ -31,21 +30,24 @@ export default class Cipher {
       });
   }
 
-  prepareData(data) {
-    if (!data) return;
-    Object.keys(data).forEach((key) => {
-      if (typeof data[key] === 'string') {
-        this.promises.push(this.decryptString(data[key]).then((decrypted) => {
-          data[key] = decrypted;
-        }));
-      } else if (typeof data[key] === 'object') {
-        this.prepareData(data[key]);
-      }
-    });
+  prepareData(data, promises = []) {
+    if (data) {
+      Object.keys(data).forEach((key) => {
+        if (typeof data[key] === 'string') {
+          promises.push(this.decryptString(data[key]).then((decrypted) => {
+            data[key] = decrypted;
+          }));
+        } else if (typeof data[key] === 'object') {
+          this.prepareData(data[key], promises);
+        }
+      });
+    }
+
+    return promises;
   }
 
-  processData() {
-    return Promise.all(this.promises);
+  processData(data) {
+    return Promise.all(this.prepareData(data));
   }
 
   encrypt(text) {

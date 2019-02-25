@@ -314,8 +314,7 @@ const unifyData = (assets) => {
 
   if (config('ENABLE_CIPHER') === true || config('ENABLE_CIPHER') === 'true') {
     const cipher = new Cipher(config('CIPHER_PASSWORD'));
-    cipher.prepareData(result);
-    return cipher.processData()
+    return cipher.processData(result)
       .then(() => result);
   }
 
