@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added support for encoded secrets
   - Added UI toll for encoding secrets
 
+## [1.1.3] - 2019-02-22
+
+### auth0-bitbucket-deploy v2.6.4
+### auth0-github-deploy v2.6.2
+### auth0-gitlab-deploy v2.7.2
+### auth0-visualstudio-deploy v2.5.3
+
+- #### Fixed
+  - Database settings without scripts bug fixed.
+
 ## [1.1.2] - 2019-02-07
 
 ### auth0-bitbucket-deploy v2.6.3
