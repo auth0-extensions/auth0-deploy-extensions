@@ -380,7 +380,7 @@ export function getChanges({ repository, branch, sha }) {
         };
 
         return Promise.props(promises)
-          .then((result) => Promise.resolve(utils.unifyData(result)));
+          .then(result => utils.unifyData(result));
       }));
 }
 

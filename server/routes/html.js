@@ -46,7 +46,8 @@ export default () => {
       BASE_URL: urlHelpers.getBaseUrl(req),
       BASE_PATH: urlHelpers.getBasePath(req),
       AUTH0_MANAGE_URL: config('AUTH0_MANAGE_URL') || 'http://manage.auth0.com',
-      A0EXT_PROVIDER: process.env.A0EXT_PROVIDER
+      A0EXT_PROVIDER: process.env.A0EXT_PROVIDER,
+      ENABLE_CIPHER: config('ENABLE_CIPHER') === true || config('ENABLE_CIPHER') === 'true'
     };
 
     // Render from CDN.

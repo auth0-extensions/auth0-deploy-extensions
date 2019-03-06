@@ -47,6 +47,30 @@
       "example": "settings/tenant",
       "description": "Path to your tenant settings directories"
     },
+    "ENABLE_CIPHER": {
+      "description": "Enables support of encrypted secrets",
+      "type": "select",
+      "required": true,
+      "default": "false",
+      "allowMultiple": false,
+      "options": [
+        {
+          "value": "false",
+          "text": "No"
+        },
+        {
+          "value": "true",
+          "text": "Yes"
+        }
+      ]
+    },
+    "CIPHER_PASSWORD": {
+      "required": true,
+      "description": "Password for encode/decode secrets",
+      "visibleIf": {
+        "ENABLE_CIPHER": "true"
+      }
+    },
     "SLACK_INCOMING_WEBHOOK_URL": {
       "example": "https://hooks.slack.com/services/...",
       "description": "Webhook URL for Slack used to notify you of successful and failed deployments",

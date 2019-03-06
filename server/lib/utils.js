@@ -4,6 +4,7 @@ import Promise from 'bluebird';
 import { ArgumentError } from 'auth0-extension-tools';
 import { constants } from 'auth0-source-control-extension-tools';
 
+import Cipher from './cipher';
 import config from './config';
 import logger from './logger';
 
@@ -305,9 +306,19 @@ const unifyData = (assets) => {
     } else {
       result[type] = unifyItem(data, type);
     }
+
+    if (result[type].length === 0) {
+      result[type] = null;
+    }
   });
 
-  return result;
+  if (config('ENABLE_CIPHER') === true || config('ENABLE_CIPHER') === 'true') {
+    const cipher = new Cipher(config('CIPHER_PASSWORD'));
+    return cipher.processData(result)
+      .then(() => result);
+  }
+
+  return Promise.resolve(result);
 };
 
 /*

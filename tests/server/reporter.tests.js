@@ -55,14 +55,14 @@ const checkData = (result, isError, done) => {
     expect(slack.attachments[0].fields[0].value).toEqual('repository');
 
     if (isError) {
-      expect(slack.attachments[0].fallback).toEqual('Bitbucket to Auth0 Deployment failed: Testing error');
-      expect(slack.attachments[0].text).toEqual('Bitbucket to Auth0 Deployment failed: (<https://wt.example.com/login|Details>)');
+      expect(slack.attachments[0].fallback).toEqual('Github to Auth0 Deployment failed: Testing error');
+      expect(slack.attachments[0].text).toEqual('Github to Auth0 Deployment failed: (<https://wt.example.com/login|Details>)');
       expect(slack.attachments[0].fields.length).toEqual(5);
       expect(slack.attachments[0].fields[4].title).toEqual('Error');
       expect(slack.attachments[0].fields[4].value).toEqual('Testing error');
     } else {
-      expect(slack.attachments[0].fallback).toEqual('Bitbucket to Auth0 Deployment');
-      expect(slack.attachments[0].text).toEqual('Bitbucket to Auth0 Deployment (<https://wt.example.com/login|Details>)');
+      expect(slack.attachments[0].fallback).toEqual('Github to Auth0 Deployment');
+      expect(slack.attachments[0].text).toEqual('Github to Auth0 Deployment (<https://wt.example.com/login|Details>)');
       expect(slack.attachments[0].fields.length).toEqual(6);
       expect(slack.attachments[0].fields[5].title).toEqual('rules updated');
       expect(slack.attachments[0].fields[5].value).toEqual(2);
@@ -118,6 +118,7 @@ const checkData = (result, isError, done) => {
 
   return done();
 };
+
 describe('reporter', () => {
   before((done) => {
     config.setProvider((key) => defaultConfig[key], null);
@@ -166,6 +167,7 @@ describe('reporter', () => {
         return done();
       });
   });
+
   it('should send error report to the hooks and save it to the storage', (done) => {
     const result = {};
 
@@ -189,6 +191,7 @@ describe('reporter', () => {
         checkData(result, true, done);
       });
   });
+
   it('should keep only 20 records in the storage', (done) => {
     storage.data.deployments = [];
 
