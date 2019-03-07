@@ -63,5 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #### Added
   - Added ability to deploy db-connections settings.
 
+- #### Changed
+  - Names of some of the configuration variables has been changed. This breaking change will require manual updating of the configuration variables.
+
 
 
