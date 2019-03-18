@@ -86,7 +86,7 @@ Bitbucket.prototype.getAll = function getAll(options, callback) {
         cb(error);
       } else {
         data.values.forEach(item => result.push(item));
-        cb(null, data.size);
+        cb(null, data.size || 0);
       }
     });
 

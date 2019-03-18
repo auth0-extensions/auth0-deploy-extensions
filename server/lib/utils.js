@@ -306,6 +306,10 @@ const unifyData = (assets) => {
     } else {
       result[type] = unifyItem(data, type);
     }
+
+    if (result[type].length === 0) {
+      delete result[type];
+    }
   });
 
   if (config('ENABLE_CIPHER') === true || config('ENABLE_CIPHER') === 'true') {
