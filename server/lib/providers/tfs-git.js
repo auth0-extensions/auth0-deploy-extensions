@@ -296,32 +296,29 @@ const getEmailProvider = (projectId, branch, files) =>
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
 export const getChanges = ({ repositoryId, branch }) =>
-  new Promise((resolve, reject) => {
-    getTree(repositoryId, branch)
-      .then(files => {
-        logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
-          name: file.path,
-          id: file.id
-        })), null, 2)}`);
+  getTree(repositoryId, branch)
+    .then(files => {
+      logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
+        name: file.path,
+        id: file.id
+      })), null, 2)}`);
 
-        const promises = {
-          rules: getRules(repositoryId, branch, files),
-          databases: getDatabaseData(repositoryId, branch, files),
-          emailProvider: getEmailProvider(repositoryId, branch, files),
-          emailTemplates: getHtmlTemplates(repositoryId, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
-          pages: getHtmlTemplates(repositoryId, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
-          clients: getConfigurables(repositoryId, branch, files, constants.CLIENTS_DIRECTORY),
-          clientGrants: getConfigurables(repositoryId, branch, files, constants.CLIENTS_GRANTS_DIRECTORY),
-          connections: getConfigurables(repositoryId, branch, files, constants.CONNECTIONS_DIRECTORY),
-          rulesConfigs: getConfigurables(repositoryId, branch, files, constants.RULES_CONFIGS_DIRECTORY),
-          resourceServers: getConfigurables(repositoryId, branch, files, constants.RESOURCE_SERVERS_DIRECTORY)
-        };
+      const promises = {
+        rules: getRules(repositoryId, branch, files),
+        databases: getDatabaseData(repositoryId, branch, files),
+        emailProvider: getEmailProvider(repositoryId, branch, files),
+        emailTemplates: getHtmlTemplates(repositoryId, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+        pages: getHtmlTemplates(repositoryId, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
+        clients: getConfigurables(repositoryId, branch, files, constants.CLIENTS_DIRECTORY),
+        clientGrants: getConfigurables(repositoryId, branch, files, constants.CLIENTS_GRANTS_DIRECTORY),
+        connections: getConfigurables(repositoryId, branch, files, constants.CONNECTIONS_DIRECTORY),
+        rulesConfigs: getConfigurables(repositoryId, branch, files, constants.RULES_CONFIGS_DIRECTORY),
+        resourceServers: getConfigurables(repositoryId, branch, files, constants.RESOURCE_SERVERS_DIRECTORY)
+      };
 
-        return Promise.props(promises)
-          .then((result) => utils.unifyData(result));
-      })
-      .catch(e => reject(e));
-  });
+      return Promise.props(promises)
+        .then((result) => utils.unifyData(result));
+    });
 
 /*
  * Get a repository id by name.
