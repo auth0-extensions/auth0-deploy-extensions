@@ -350,32 +350,29 @@ const getEmailProvider = (changesetId, files) =>
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
 export const getChanges = ({ project, changesetId }) =>
-  new Promise((resolve, reject) => {
-    getTree(project, changesetId)
-      .then(files => {
-        logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
-          name: file.path,
-          id: file.id
-        })), null, 2)}`);
+  getTree(project, changesetId)
+    .then(files => {
+      logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
+        name: file.path,
+        id: file.id
+      })), null, 2)}`);
 
-        const promises = {
-          rules: getRules(changesetId, files),
-          databases: getDatabaseData(changesetId, files),
-          emailProvider: getEmailProvider(changesetId, files),
-          emailTemplates: getHtmlTemplates(changesetId, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
-          pages: getHtmlTemplates(changesetId, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
-          clients: getConfigurables(changesetId, files, constants.CLIENTS_DIRECTORY),
-          clientGrants: getConfigurables(changesetId, files, constants.CLIENTS_GRANTS_DIRECTORY),
-          connections: getConfigurables(changesetId, files, constants.CONNECTIONS_DIRECTORY),
-          rulesConfigs: getConfigurables(changesetId, files, constants.RULES_CONFIGS_DIRECTORY),
-          resourceServers: getConfigurables(changesetId, files, constants.RESOURCE_SERVERS_DIRECTORY)
-        };
+      const promises = {
+        rules: getRules(changesetId, files),
+        databases: getDatabaseData(changesetId, files),
+        emailProvider: getEmailProvider(changesetId, files),
+        emailTemplates: getHtmlTemplates(changesetId, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+        pages: getHtmlTemplates(changesetId, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
+        clients: getConfigurables(changesetId, files, constants.CLIENTS_DIRECTORY),
+        clientGrants: getConfigurables(changesetId, files, constants.CLIENTS_GRANTS_DIRECTORY),
+        connections: getConfigurables(changesetId, files, constants.CONNECTIONS_DIRECTORY),
+        rulesConfigs: getConfigurables(changesetId, files, constants.RULES_CONFIGS_DIRECTORY),
+        resourceServers: getConfigurables(changesetId, files, constants.RESOURCE_SERVERS_DIRECTORY)
+      };
 
-        return Promise.props(promises)
-          .then((result) => utils.unifyData(result));
-      })
-      .catch(e => reject(e));
-  });
+      return Promise.props(promises)
+        .then((result) => utils.unifyData(result));
+    });
 
 /*
  * Get default options for manual deploy
