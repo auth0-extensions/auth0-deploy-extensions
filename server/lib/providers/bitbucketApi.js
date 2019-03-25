@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import async from 'async';
 import request from 'request';
 
 export default class Bitbucket {
@@ -74,51 +73,33 @@ Bitbucket.prototype.buildEndpoint = function buildEndpoint(path, params) {
 };
 
 Bitbucket.prototype.getAll = function getAll(options, callback) {
-  const concurrency = 2;
   const perPage = 100;
   const result = [];
 
   options.url = options.url + '?pagelen=' + perPage;
 
-  const getTotals = (cb) =>
-    this.request(options, (error, data) => {
-      if (error) {
-        cb(error);
-      } else {
-        data.values.forEach(item => result.push(item));
-        cb(null, data.size);
-      }
-    });
+  const getPage = (url, cb) => {
+    const pageOptions = { ...options };
+    if (url) {
+      pageOptions.url = url;
+    }
 
-  const getPage = (page, cb) => {
-    const pageOptions = { ...options, url: options.url + '&page=' + (page + 1) };
     this.request(pageOptions, (error, data) => {
       if (error) {
-        cb(error);
-      } else {
-        data.values.forEach(item => result.push(item));
-        cb(null);
+        return cb(error);
       }
+
+      data.values.forEach(item => result.push(item));
+
+      if (data.next) {
+        return getPage(data.next, cb);
+      }
+
+      return cb(null, result);
     });
   };
 
-  return getTotals((err, total) => {
-    if (err) {
-      return callback(err);
-    }
-
-    if (total === 0 || result.length >= total) {
-      return callback(null, result);
-    }
-
-    return async.timesLimit(total, concurrency, getPage, (error) => {
-      if (error) {
-        return callback(error);
-      }
-
-      return callback(null, result);
-    });
-  });
+  return getPage(null, callback);
 };
 
 Bitbucket.prototype.doRequest = function doRequest(isTree, path, params, callback) {
