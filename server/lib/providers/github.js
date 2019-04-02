@@ -75,6 +75,7 @@ const downloadFile = (repository, branch, file) => {
   const url = `https://${token}:x-oauth-basic@${host}${pathPrefix}/repos/${repository}/git/blobs/${file.sha}`;
 
   return request({ uri: url, json: true, headers: { 'user-agent': 'auth0-github-deploy' } })
+    .promise()
     .then(blob => {
       logger.debug(`Downloaded ${file.path} (${file.sha})`);
 

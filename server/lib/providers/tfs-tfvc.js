@@ -174,6 +174,7 @@ const downloadFile = (file, changesetId) => {
   };
 
   return request.get(options)
+    .promise()
     .then((data) => ({
       fileName: file.path,
       contents: data
