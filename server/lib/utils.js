@@ -314,6 +314,7 @@ const unifyData = (assets) => {
       .then(() => result);
   }
 
+  console.log(result.rules);
   return Promise.resolve(result);
 };
 

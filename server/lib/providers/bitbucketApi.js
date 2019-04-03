@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import request from 'request';
+import axios from 'axios';
 
 export default class Bitbucket {
   constructor(options) {
@@ -20,42 +20,10 @@ export default class Bitbucket {
       }
     }, options);
 
-    this.request = (opts, cb) => {
-      request(opts, (error, response, data) => {
-        if (error) {
-          cb(error);
-        } else {
-          try {
-            data = JSON.parse(data); // eslint-disable-line no-param-reassign
-            if (typeof data.errors !== 'undefined') {
-              cb(data.errors);
-            } else if (response.statusCode !== 200) {
-              cb(this.generateApiError(opts.url, response.statusCode, response));
-            } else {
-              cb(null, data);
-            }
-          } catch (parseError) {
-            if (response.statusCode === 200) {
-              cb(null, data);
-            } else {
-              cb(this.generateApiError(opts.url, response.statusCode, response));
-            }
-          }
-        }
-      }).auth(this.options.user_name, this.options.password, true);
-    };
-
-    this.generateApiError = (url, statusCode, response = null) => {
-      const error = new Error(`Error ${statusCode} when calling GET '${url}' (username: ${this.options.user_name})`);
-      error.status = statusCode;
-      error.statusCode = statusCode;
-      error.report = `status: ${statusCode}
-      user: ${this.options.user_name}
-      url: ${url}
-      method: get
-      response: ${JSON.stringify(response)}`;
-      return error;
-    };
+    this.request = (opts, cb) =>
+      axios({ ...opts, auth: { username: this.options.user_name, password: this.options.password } })
+        .then(response => cb(null, response.data))
+        .catch(cb);
   }
 }
 

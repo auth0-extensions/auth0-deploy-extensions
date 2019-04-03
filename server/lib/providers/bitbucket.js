@@ -40,7 +40,7 @@ const getTreeByDir = (params, dir) =>
   new Promise((resolve, reject) => {
     try {
       bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${utils.getBaseDir()}${dir}`, params, (err, res) => {
-        if (err && err.statusCode === 404) {
+        if (err && err.response && err.response.status === 404) {
           return resolve([]);
         } else if (err) {
           return reject(err);
@@ -95,7 +95,7 @@ const getDBConnectionsTree = (params) =>
     try {
       const dbPath = `repositories/{username}/{repo_slug}/src/{revision}/${utils.getBaseDir()}${constants.DATABASE_CONNECTIONS_DIRECTORY}`;
       bitbucket().getTree(dbPath, params, (err, res) => {
-        if (err && err.statusCode === 404) {
+        if (err && err.response && err.response.status === 404) {
           return resolve([]);
         } else if (err) {
           return reject(err);

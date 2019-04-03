@@ -1,6 +1,5 @@
 import _ from 'lodash';
-import Promise from 'bluebird';
-import request from 'superagent';
+import axios from 'axios';
 
 const createPayload = (report, extensionUrl) => {
   const msg = {
@@ -63,17 +62,8 @@ export default function(report, extensionUrl, hook) {
 
   const msg = createPayload(report, extensionUrl);
 
-  return new Promise((resolve, reject) => {
-    request
-      .post(hook)
-      .send(msg)
-      .set('Accept', 'application/json')
-      .end((err) => {
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve();
-      });
-  });
+  return axios
+    .post(hook, msg)
+    .then(() => null)
+    .catch(err => err);
 }

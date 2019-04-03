@@ -1,7 +1,7 @@
 import _ from 'lodash';
+import axios from 'axios';
 import Promise from 'bluebird';
 import GitHubApi from 'github';
-import request from 'request-promise';
 import { constants } from 'auth0-source-control-extension-tools';
 
 import config from '../config';
@@ -74,10 +74,11 @@ const downloadFile = (repository, branch, file) => {
   const pathPrefix = host !== 'api.github.com' ? config('API_PATH') || '/api/v3' : '';
   const url = `https://${token}:x-oauth-basic@${host}${pathPrefix}/repos/${repository}/git/blobs/${file.sha}`;
 
-  return request({ uri: url, json: true, headers: { 'user-agent': 'auth0-github-deploy' } })
-    .promise()
-    .then(blob => {
+  return axios({ url, headers: { 'user-agent': 'auth0-github-deploy' } })
+    .then((response) => {
       logger.debug(`Downloaded ${file.path} (${file.sha})`);
+
+      const blob = response.data;
 
       return {
         fileName: file.path,
