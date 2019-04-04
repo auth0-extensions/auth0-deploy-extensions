@@ -6,9 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-### auth0-github-deploy v2.7.2
-### auth0-visualstudio-deploy v2.6.3
-### auth0-bitbucket-deploy v2.7.3
+### auth0-bitbucket-deploy v2.8.0
+### auth0-github-deploy v2.8.0
+### auth0-gitlab-deploy v2.9.0
+### auth0-visualstudio-deploy v2.7.0
 
 - #### Changed
   - `request-promise` is replaced by `axios`.
