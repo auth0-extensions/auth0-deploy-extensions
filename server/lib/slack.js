@@ -62,8 +62,5 @@ export default function(report, extensionUrl, hook) {
 
   const msg = createPayload(report, extensionUrl);
 
-  return axios
-    .post(hook, msg)
-    .then(() => null)
-    .catch(err => err);
+  return axios.post(hook, msg);
 }

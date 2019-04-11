@@ -5,8 +5,5 @@ export default function(report, hook) {
     return Promise.resolve();
   }
 
-  return axios
-    .post(hook, report)
-    .then(() => null)
-    .catch(err => err);
+  return axios.post(hook, report);
 }

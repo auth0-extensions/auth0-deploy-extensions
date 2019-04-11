@@ -20,10 +20,9 @@ export default class Bitbucket {
       }
     }, options);
 
-    this.request = (opts, cb) =>
+    this.request = (opts) =>
       axios({ ...opts, auth: { username: this.options.user_name, password: this.options.password } })
-        .then(response => cb(null, response.data))
-        .catch(cb);
+        .then(response => response.data);
   }
 }
 
@@ -40,42 +39,34 @@ Bitbucket.prototype.buildEndpoint = function buildEndpoint(path, params) {
   };
 };
 
-Bitbucket.prototype.getAll = function getAll(options, callback) {
+Bitbucket.prototype.getAll = function getAll(options) {
   const perPage = 100;
   const result = [];
 
   options.url = options.url + '?pagelen=' + perPage;
 
-  const getPage = (url, cb) => {
+  const getPage = (url) => {
     const pageOptions = { ...options };
     if (url) {
       pageOptions.url = url;
     }
 
-    this.request(pageOptions, (error, data) => {
-      if (error) {
-        return cb(error);
-      }
+    return this.request(pageOptions)
+      .then(data => {
+        data.values.forEach(item => result.push(item));
 
-      data.values.forEach(item => result.push(item));
+        if (data.next) {
+          return getPage(data.next);
+        }
 
-      if (data.next) {
-        return getPage(data.next, cb);
-      }
-
-      return cb(null, result);
-    });
+        return result;
+      });
   };
 
-  return getPage(null, callback);
+  return getPage();
 };
 
-Bitbucket.prototype.doRequest = function doRequest(isTree, path, params, callback) {
-  if (typeof params === 'function') {
-    callback = params; // eslint-disable-line no-param-reassign
-    params = {}; // eslint-disable-line no-param-reassign
-  }
-
+Bitbucket.prototype.doRequest = function doRequest(isTree, path, params) {
   const endpoint = this.buildEndpoint(path, params);
 
   const options = {
@@ -87,28 +78,24 @@ Bitbucket.prototype.doRequest = function doRequest(isTree, path, params, callbac
   options.headers = this.options.request_options.headers;
 
   if (isTree) {
-    return this.getAll(options, (error, data) => {
-      if (error) {
-        callback(error);
-      } else {
-        callback(null, data);
-      }
-    });
+    return this.getAll(options);
   }
 
-  return this.request(options, (error, data) => {
-    if (error) {
-      callback(error);
-    } else {
-      callback(null, data);
-    }
-  });
+  return this.request(options);
 };
 
-Bitbucket.prototype.getTree = function getTree(url, params, callback) {
-  return this.doRequest(true, url, params, callback);
+Bitbucket.prototype.getTree = function getTree(url, params) {
+  return this.doRequest(true, url, params)
+    .then(res => res)
+    .catch((err) => {
+      if (err.response && err.response.status === 404) {
+        return Promise.resolve([]);
+      }
+
+      return Promise.reject(err);
+    });
 };
 
-Bitbucket.prototype.get = function get(url, params, callback) {
-  return this.doRequest(false, url, params, callback);
+Bitbucket.prototype.get = function get(url, params) {
+  return this.doRequest(false, url, params);
 };

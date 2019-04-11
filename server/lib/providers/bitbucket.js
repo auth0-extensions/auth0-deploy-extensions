@@ -10,116 +10,90 @@ import utils from '../utils';
 
 const bitbucket = () =>
   new BitbucketApi({
-    user_name: config('USER'),
+    user_name: config('USERs'),
     password: config('PASSWORD'),
     rest_base: 'https://api.bitbucket.org/',
     rest_version: '2.0'
   });
 
-const checkRepo = (repository) =>
-  new Promise((resolve, reject) => {
-    try {
-      const { user, repo } = utils.parseRepo(repository);
+const checkRepo = (repository) => {
+  try {
+    const { user, repo } = utils.parseRepo(repository);
 
-      bitbucket().get('repositories/{username}/{repo_slug}', { username: user, repo_slug: repo }, (err) => {
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve({ user, repo });
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
+    return bitbucket()
+      .get('repositories/{username}/{repo_slug}', { username: user, repo_slug: repo })
+      .then(() => ({ user, repo }));
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};
 
 /*
  * Get pages tree.
  */
 const getTreeByDir = (params, dir) =>
-  new Promise((resolve, reject) => {
-    try {
-      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${utils.getBaseDir()}${dir}`, params, (err, res) => {
-        if (err && err.response && err.response.status === 404) {
-          return resolve([]);
-        } else if (err) {
-          return reject(err);
-        } else if (!res) {
-          return resolve([]);
-        }
+  bitbucket()
+    .getTree(`repositories/{username}/{repo_slug}/src/{revision}/${utils.getBaseDir()}${dir}`, params)
+    .then(res => {
+      if (!res) {
+        return [];
+      }
 
-        const files = res.filter(f => utils.validFilesOnly(f.path));
+      const files = res.filter(f => utils.validFilesOnly(f.path));
 
-        files.forEach((elem, idx) => {
-          files[idx].path = elem.path;
-        });
-
-        return resolve(files);
+      files.forEach((elem, idx) => {
+        files[idx].path = elem.path;
       });
-    } catch (e) {
-      reject(e);
-    }
-  });
+
+      return files;
+    });
 
 /*
  * Get connection files for one db connection
  */
 const getDBConnectionTreeByPath = (params, filePath) =>
-  new Promise((resolve, reject) => {
-    try {
-      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${filePath}`, params, (err, res) => {
-        if (err) {
-          return reject(err);
-        } else if (!res) {
-          return resolve([]);
-        }
+  bitbucket()
+    .getTree(`repositories/{username}/{repo_slug}/src/{revision}/${filePath}`, params)
+    .then(res => {
+      if (!res) {
+        return [];
+      }
 
-        const files = res.filter(f => utils.validFilesOnly(f.path));
+      const files = res.filter(f => utils.validFilesOnly(f.path));
 
-        files.forEach((elem, idx) => {
-          files[idx].path = elem.path;
-        });
-
-        return resolve(files);
+      files.forEach((elem, idx) => {
+        files[idx].path = elem.path;
       });
-    } catch (e) {
-      reject(e);
-    }
-  });
+
+      return files;
+    });
 
 /*
  * Get all files for all database-connections.
  */
-const getDBConnectionsTree = (params) =>
-  new Promise((resolve, reject) => {
-    try {
-      const dbPath = `repositories/{username}/{repo_slug}/src/{revision}/${utils.getBaseDir()}${constants.DATABASE_CONNECTIONS_DIRECTORY}`;
-      bitbucket().getTree(dbPath, params, (err, res) => {
-        if (err && err.response && err.response.status === 404) {
-          return resolve([]);
-        } else if (err) {
-          return reject(err);
-        } else if (!res) {
-          return resolve([]);
-        }
+const getDBConnectionsTree = (params) => {
+  const dbPath = `repositories/{username}/{repo_slug}/src/{revision}/${utils.getBaseDir()}${constants.DATABASE_CONNECTIONS_DIRECTORY}`;
+  return bitbucket()
+    .getTree(dbPath, params)
+    .then(res => {
+      if (!res) {
+        return [];
+      }
 
-        const subdirs = res.filter(item => item.type === 'commit_directory');
-        const promisses = [];
-        let files = [];
+      const subdirs = res.filter(item => item.type === 'commit_directory');
+      const promisses = [];
+      let files = [];
 
-        _.forEach(subdirs, (dir) => {
-          promisses.push(getDBConnectionTreeByPath(params, dir.path).then(data => {
-            files = files.concat(data);
-          }));
-        });
-
-        return Promise.all(promisses)
-          .then(() => resolve(files));
+      _.forEach(subdirs, (dir) => {
+        promisses.push(getDBConnectionTreeByPath(params, dir.path).then(data => {
+          files = files.concat(data);
+        }));
       });
-    } catch (e) {
-      reject(e);
-    }
-  });
+
+      return Promise.all(promisses)
+        .then(() => files);
+    });
+};
 
 /*
  * Get tree.
@@ -160,30 +134,23 @@ const getTree = (parsedRepo, branch, sha) => {
 /*
  * Download a single file.
  */
-const downloadFile = (parsedRepo, branch, file, shaToken) =>
-  new Promise((resolve, reject) => {
-    const { user, repo } = parsedRepo;
-    const params = {
-      username: user,
-      repo_slug: repo,
-      filename: file.path,
-      revision: shaToken
-    };
+const downloadFile = (parsedRepo, branch, file, shaToken) => {
+  const { user, repo } = parsedRepo;
+  const params = {
+    username: user,
+    repo_slug: repo,
+    filename: file.path,
+    revision: shaToken
+  };
 
-    const url = 'repositories/{username}/{repo_slug}/src/{revision}/{filename}';
-    bitbucket().get(url, params, (err, data) => {
-      if (err !== null) {
-        logger.error(`Error downloading '${file.path}'`);
-        logger.error(err);
-        reject(err);
-      } else {
-        resolve({
-          fileName: file.path,
-          contents: data
-        });
-      }
-    });
-  });
+  const url = 'repositories/{username}/{repo_slug}/src/{revision}/{filename}';
+  return bitbucket()
+    .get(url, params)
+    .then(data => ({
+      fileName: file.path,
+      contents: data
+    }));
+};
 
 
 /*
