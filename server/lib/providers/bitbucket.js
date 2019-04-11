@@ -10,7 +10,7 @@ import utils from '../utils';
 
 const bitbucket = () =>
   new BitbucketApi({
-    user_name: config('USERs'),
+    user_name: config('USER'),
     password: config('PASSWORD'),
     rest_base: 'https://api.bitbucket.org/',
     rest_version: '2.0'
