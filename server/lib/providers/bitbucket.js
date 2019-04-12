@@ -17,15 +17,11 @@ const bitbucket = () =>
   });
 
 const checkRepo = (repository) => {
-  try {
-    const { user, repo } = utils.parseRepo(repository);
+  const { user, repo } = utils.parseRepo(repository);
 
-    return bitbucket()
-      .get('repositories/{username}/{repo_slug}', { username: user, repo_slug: repo })
-      .then(() => ({ user, repo }));
-  } catch (e) {
-    return Promise.reject(e);
-  }
+  return bitbucket()
+    .get('repositories/{username}/{repo_slug}', { username: user, repo_slug: repo })
+    .then(() => ({ user, repo }));
 };
 
 /*

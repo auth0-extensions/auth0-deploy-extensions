@@ -177,8 +177,7 @@ const downloadFile = (file, changesetId) => {
     .then((response) => ({
       fileName: file.path,
       contents: response.data && response.data.content
-    }))
-    .catch(e => e);
+    }));
 };
 
 /*
