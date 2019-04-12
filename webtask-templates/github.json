@@ -1,8 +1,8 @@
 {
   "title": "GitHub Deployments",
   "name": "auth0-github-deploy",
-  "version": "2.7.1",
-  "preVersion": "2.6.2",
+  "version": "2.8.0",
+  "preVersion": "2.7.1",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Pages, Rules and Custom Database Connections from GitHub.",
   "type": "application",

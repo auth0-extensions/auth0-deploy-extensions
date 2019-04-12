@@ -1,6 +1,6 @@
 import _ from 'lodash';
+import axios from 'axios';
 import Promise from 'bluebird';
-import request from 'request-promise';
 import { constants } from 'auth0-source-control-extension-tools';
 import { getPersonalAccessTokenHandler, getBasicHandler, WebApi } from 'vso-node-api';
 
@@ -166,19 +166,18 @@ const downloadFile = (file, changesetId) => {
   const auth = new Buffer(`${config('USERNAME')}:${config('TOKEN')}`).toString('base64');
 
   const options = {
+    method: 'GET',
     headers: {
-      Authorization: `Basic ${auth}`,
-      'Content-Type': 'text/html'
+      Authorization: `Basic ${auth}`
     },
-    uri: `https://${config('INSTANCE')}.visualstudio.com/${config('COLLECTION')}/_apis/tfvc/items?path=${file.path}${versionString}&api-version=1.0`
+    url: `https://${config('INSTANCE')}.visualstudio.com/${config('COLLECTION')}/_apis/tfvc/items?path=${file.path}${versionString}&api-version=5.0&includeContent=true`
   };
 
-  return request.get(options)
-    .then((data) => ({
+  return axios(options)
+    .then((response) => ({
       fileName: file.path,
-      contents: data
-    }))
-    .catch(e => e);
+      contents: response.data && response.data.content
+    }));
 };
 
 /*
@@ -205,7 +204,7 @@ const downloadRule = (changesetId, ruleName, rule) => {
     downloads.push(downloadFile(rule.metadataFile, changesetId)
       .then(file => {
         currentRule.metadata = true;
-        currentRule.metadataFile = JSON.parse(file.contents);
+        currentRule.metadataFile = file.contents;
       }));
   }
 
@@ -227,7 +226,7 @@ const downloadConfigurable = (changesetId, name, item) => {
   if (item.configFile) {
     downloads.push(downloadFile(item.configFile, changesetId)
       .then(file => {
-        configurable.configFile = JSON.parse(file.contents);
+        configurable.configFile = file.contents;
       }));
   }
 
@@ -235,7 +234,7 @@ const downloadConfigurable = (changesetId, name, item) => {
     downloads.push(downloadFile(item.metadataFile, changesetId)
       .then(file => {
         configurable.metadata = true;
-        configurable.metadataFile = JSON.parse(file.contents);
+        configurable.metadataFile = file.contents;
       }));
   }
 

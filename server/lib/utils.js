@@ -308,6 +308,13 @@ const unifyData = (assets) => {
     }
   });
 
+  _.forEach(result, (asset, name) => {
+    if (Array.isArray(asset) && asset.length === 0) {
+      result[name] = null;
+      delete result[name];
+    }
+  });
+
   if (config('ENABLE_CIPHER') === true || config('ENABLE_CIPHER') === 'true') {
     const cipher = new Cipher(config('CIPHER_PASSWORD'));
     return cipher.processData(result)
