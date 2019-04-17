@@ -110,4 +110,48 @@ describe('unifyData', () => {
         done();
       });
   });
+
+  it('should remove enabled prop form error_page', (done) => {
+    const data = {
+      pages: [
+        {
+          name: 'error_page',
+          htmlFile: 'Page Content',
+          metadata: true,
+          metadataFile: '{ "enabled":true }'
+        }
+      ]
+    };
+
+    utils.unifyData(data)
+      .then((unified) => {
+        expect(unified.pages[0].name).toEqual('error_page');
+        expect(unified.pages[0].html).toEqual('Page Content');
+        expect(unified.pages[0].enabled).toEqual(undefined);
+
+        done();
+      });
+  });
+
+  it('should clear html prop of error_page if disabled', (done) => {
+    const data = {
+      pages: [
+        {
+          name: 'error_page',
+          htmlFile: 'Page Content',
+          metadata: true,
+          metadataFile: '{ "enabled":false }'
+        }
+      ]
+    };
+
+    utils.unifyData(data)
+      .then((unified) => {
+        expect(unified.pages[0].name).toEqual('error_page');
+        expect(unified.pages[0].html).toEqual('');
+        expect(unified.pages[0].enabled).toEqual(undefined);
+
+        done();
+      });
+  });
 });

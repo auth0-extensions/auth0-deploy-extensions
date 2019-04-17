@@ -244,8 +244,13 @@ const unifyItem = (item, type) => {
     case 'pages': {
       const meta = extractFileContent(item.metadataFile);
       const { enabled } = meta;
+      const page = { html: item.htmlFile, name: item.name, enabled };
+      if (page.name === 'error_page') {
+        page.html = (typeof enabled === 'undefined' || enabled) ? page.html : '';
+        delete page.enabled;
+      }
 
-      return ({ html: item.htmlFile, name: item.name, enabled });
+      return page;
     }
 
     case 'emailTemplates': {
