@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [1.3.1] - 2019-04-22
+
+### auth0-bitbucket-deploy v2.8.1
+### auth0-github-deploy v2.8.1
+### auth0-gitlab-deploy v2.9.1
+### auth0-visualstudio-deploy v2.7.1
+
+- #### Fixed
+  - Database connection custom scripts won't be sent, if database customization is disabled in `settings.json`
+  
 ## [1.3.0] - 2019-04-12
 
 ### auth0-bitbucket-deploy v2.8.0
