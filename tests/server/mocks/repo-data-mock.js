@@ -91,5 +91,23 @@ module.exports = {
     connections: [],
     rulesConfigs: [],
     resourceServers: []
+  },
+  dbScriptsNoCustom: {
+    rules: [],
+    databases: [ {
+      name: 'Database',
+      settings: '{ "options": { "enabledDatabaseCustomization": false } }',
+      scripts: [ {
+        name: 'login',
+        scriptFile: 'Database login script'
+      } ]
+    } ],
+    emailTemplates: [],
+    pages: [],
+    clients: [],
+    clientGrants: [],
+    connections: [],
+    rulesConfigs: [],
+    resourceServers: []
   }
 };

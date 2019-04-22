@@ -110,4 +110,25 @@ describe('unifyData', () => {
         done();
       });
   });
+
+  it('should unify database and not include customScripts if customization is disabled', (done) => {
+    utils.unifyData(assets.dbScriptsNoCustom)
+      .then((unified) => {
+        expect(unified.databases[0].name).toEqual('Database');
+        expect(unified.databases[0].options.customScripts).toNotExist();
+        expect(unified.databases[0].options.enabledDatabaseCustomization).toEqual(false);
+
+        expect(unified.rules).toNotExist();
+        expect(unified.rulesConfigs).toNotExist();
+        expect(unified.emailProvider).toNotExist();
+        expect(unified.emailTemplates).toNotExist();
+        expect(unified.pages).toNotExist();
+        expect(unified.clients).toNotExist();
+        expect(unified.clientGrants).toNotExist();
+        expect(unified.connections).toNotExist();
+        expect(unified.resourceServers).toNotExist();
+
+        done();
+      });
+  });
 });
