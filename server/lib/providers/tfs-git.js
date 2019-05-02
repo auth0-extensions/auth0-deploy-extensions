@@ -323,19 +323,20 @@ export const getChanges = ({ repositoryId, branch }) =>
 /*
  * Get a repository id by name.
  */
-const getRepositoryId = () =>
-  getApi()
-    .then(api => api.getRepositories())
+const getRepositoryId = () => {
+  const parts = config('REPOSITORY').split('/');
+  const [ projectName, repoName ] = (parts.length === 2) ? parts : [ null, config('REPOSITORY') ];
+
+  return getApi()
+    .then(api => api.getRepositories(projectName))
     .then(repositories => {
       if (!repositories) return null;
 
-      let rID = null;
-      const repository = repositories.filter(f => f.name === config('REPOSITORY'));
+      const repository = repositories.find(f => f.name === repoName);
 
-      if (repository[0] && repository[0].id) rID = repository[0].id;
-
-      return rID;
+      return repository && repository.id;
     });
+};
 
 /*
  * Get default options for manual deploy
