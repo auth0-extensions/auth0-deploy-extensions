@@ -99,6 +99,8 @@ const validFilesOnly = (fileName) => {
     return true;
   } else if (isRule(fileName)) {
     return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.ROLES_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
   } else if (isConfigurable(fileName, constants.CLIENTS_DIRECTORY)) {
     return /\.(js|json)$/i.test(fileName);
   } else if (isConfigurable(fileName, constants.CLIENTS_GRANTS_DIRECTORY)) {
@@ -254,6 +256,7 @@ const unifyItem = (item, type) => {
 
       return ({ ...meta, body: item.htmlFile });
     }
+    case 'roles':
     case 'clientGrants':
     case 'emailProvider': {
       const data = extractFileContent(item.configFile);

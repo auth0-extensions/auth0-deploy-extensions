@@ -32,11 +32,29 @@ repository =>
     rule1.js
     rule1.json
     rule2.js
+  roles
+      role1.json
+      role2.json
   pages
     login.html
     login.json
     password_reset.html
     password_reset.json
+```
+
+##### Roles
+In the .json file you can specify roles options, the name of the file does not matter. Example:
+```
+{
+  "name": "Role name",
+  "description": "Role description",
+  "permissions": [
+    {
+      "permission_name": "read:something",
+      "resource_server_identifier": "api-identifier"
+    }
+  ]
+}
 ```
 
 ##### Clients

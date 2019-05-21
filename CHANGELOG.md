@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.4.0] - 2019-04-12
+
+### auth0-bitbucket-deploy v2.9.0
+### auth0-github-deploy v2.9.0
+### auth0-gitlab-deploy v2.10.0
+### auth0-visualstudio-deploy v2.8.0
+
+- #### Changed
+  - `auth0` and `auth0-source-control-extension-tools` modules version updated to `2.17.0` and `3.4.0`
+- #### Added
+  - Roles management support
+  
 ## [1.3.1] - 2019-05-02
 
 ### auth0-bitbucket-deploy v2.8.1

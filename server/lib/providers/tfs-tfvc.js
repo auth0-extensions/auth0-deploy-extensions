@@ -362,6 +362,7 @@ export const getChanges = ({ project, changesetId }) =>
         emailProvider: getEmailProvider(changesetId, files),
         emailTemplates: getHtmlTemplates(changesetId, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
         pages: getHtmlTemplates(changesetId, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
+        roles: getConfigurables(changesetId, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(changesetId, files, constants.CLIENTS_DIRECTORY),
         clientGrants: getConfigurables(changesetId, files, constants.CLIENTS_GRANTS_DIRECTORY),
         connections: getConfigurables(changesetId, files, constants.CONNECTIONS_DIRECTORY),

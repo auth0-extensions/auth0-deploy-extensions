@@ -309,6 +309,7 @@ export const getChanges = ({ repositoryId, branch }) =>
         emailProvider: getEmailProvider(repositoryId, branch, files),
         emailTemplates: getHtmlTemplates(repositoryId, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
         pages: getHtmlTemplates(repositoryId, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
+        roles: getConfigurables(repositoryId, branch, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(repositoryId, branch, files, constants.CLIENTS_DIRECTORY),
         clientGrants: getConfigurables(repositoryId, branch, files, constants.CLIENTS_GRANTS_DIRECTORY),
         connections: getConfigurables(repositoryId, branch, files, constants.CONNECTIONS_DIRECTORY),
