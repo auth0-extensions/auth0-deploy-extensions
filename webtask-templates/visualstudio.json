@@ -42,7 +42,7 @@
     },
     "REPOSITORY": {
       "example": "MyFirstProject",
-      "description": "The project from which you want to deploy rules and database scripts",
+      "description": "The project from which you want to deploy rules and database scripts. To use a specific repository within a project, format your input value as follows: `projectName/repoName`.",
       "required": true
     },
     "BRANCH": {
@@ -61,17 +61,17 @@
       }
     },
     "INSTANCE": {
-      "example": "INSTANCE.visualstudio.com",
-      "description": "Your Visual Studio Team Services instance name (without .visualstudio.com)",
+      "example": "ORGANIZATION.visualstudio.com or dev.azure.com/ORGANIZATION",
+      "description": "Your Visual Studio Team Services/Azure DevOps organization name (without .visualstudio.com or dev.azure.com)",
       "required": true
     },
     "COLLECTION": {
-      "description": "Your visualstudio collection",
+      "description": "Your visualstudio/azure devops collection",
       "default": "DefaultCollection",
       "required": true
     },
     "USERNAME": {
-      "description": "Your Visual Studio Team Services username",
+      "description": "Your Visual Studio Team Services / Azure DevOps username",
       "required": true
     },
     "AUTH_METHOD": {
@@ -92,7 +92,7 @@
       ]
     },
     "PASSWORD": {
-      "description": "Your Visual Studio password (Alternate authentication credentials)",
+      "description": "Your Visual Studio / Azure DevOps password (Alternate authentication credentials)",
       "required": true,
       "type": "password",
       "visibleIf": {
@@ -100,7 +100,7 @@
       }
     },
     "TOKEN": {
-      "description": "Your personal access token for Visual Studio Team Services",
+      "description": "Your personal access token for Visual Studio Team Services / Azure DevOps",
       "required": true,
       "type": "password",
       "visibleIf": {
