@@ -138,6 +138,23 @@
         "ENABLE_CIPHER": "true"
       }
     },
+    "AUTH0_ALLOW_DELETE": {
+      "description": "Allows the extension to delete objects that does not exist within the repository.",
+      "type": "select",
+      "required": true,
+      "default": "false",
+      "allowMultiple": false,
+      "options": [
+        {
+          "value": "false",
+          "text": "No"
+        },
+        {
+          "value": "true",
+          "text": "Yes"
+        }
+      ]
+    },
     "SLACK_INCOMING_WEBHOOK_URL": {
       "example": "https://hooks.slack.com/services/...",
       "description": "Webhook URL for Slack used to notify you of successful and failed deployments",

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `auth0` and `auth0-source-control-extension-tools` modules version updated to `2.17.0` and `3.4.0`
 - #### Added
   - Roles management support
+  - `AUTH0_ALLOW_DELETE` option. WARNING: enabling this option will allow the extension to remove from the tenant all objects that does not exist in the repository.
   
 ## [1.3.1] - 2019-05-02
 
