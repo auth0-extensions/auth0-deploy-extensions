@@ -31,6 +31,10 @@ module.exports = {
       metadata: true,
       metadataFile: '{ "enabled":true }'
     } ],
+    roles: [ {
+      name: 'Role',
+      configFile: '{ "name": "Role", "string":"Role Data" }'
+    } ],
     clients: [ {
       name: 'Client',
       configFile: '{ "string":"Client Config" }'

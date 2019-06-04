@@ -281,6 +281,7 @@ export const getChanges = ({ repository, branch, sha }) =>
         emailProvider: getEmailProvider(repository, branch, files),
         emailTemplates: getHtmlTemplates(repository, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
         pages: getHtmlTemplates(repository, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
+        roles: getConfigurables(repository, branch, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(repository, branch, files, constants.CLIENTS_DIRECTORY),
         clientGrants: getConfigurables(repository, branch, files, constants.CLIENTS_GRANTS_DIRECTORY),
         connections: getConfigurables(repository, branch, files, constants.CONNECTIONS_DIRECTORY),

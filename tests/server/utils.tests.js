@@ -49,6 +49,9 @@ describe('unifyData', () => {
         expect(unified.clients[0].name).toEqual('Client');
         expect(unified.clients[0].string).toEqual('Client Config');
 
+        expect(unified.roles[0].name).toEqual('Role');
+        expect(unified.roles[0].string).toEqual('Role Data');
+
         expect(unified.clientGrants[0].string).toEqual('Grant Config');
 
         expect(unified.connections[0].name).toEqual('Connection');
@@ -80,6 +83,7 @@ describe('unifyData', () => {
         expect(unified.emailProvider).toNotExist();
         expect(unified.emailTemplates).toNotExist();
         expect(unified.pages).toNotExist();
+        expect(unified.roles).toNotExist();
         expect(unified.clients).toNotExist();
         expect(unified.clientGrants).toNotExist();
         expect(unified.connections).toNotExist();
@@ -102,6 +106,7 @@ describe('unifyData', () => {
         expect(unified.emailProvider).toNotExist();
         expect(unified.emailTemplates).toNotExist();
         expect(unified.pages).toNotExist();
+        expect(unified.roles).toNotExist();
         expect(unified.clients).toNotExist();
         expect(unified.clientGrants).toNotExist();
         expect(unified.connections).toNotExist();
@@ -123,6 +128,7 @@ describe('unifyData', () => {
         expect(unified.emailProvider).toNotExist();
         expect(unified.emailTemplates).toNotExist();
         expect(unified.pages).toNotExist();
+        expect(unified.roles).toNotExist();
         expect(unified.clients).toNotExist();
         expect(unified.clientGrants).toNotExist();
         expect(unified.connections).toNotExist();

@@ -335,6 +335,7 @@ export function getChanges({ repository, branch, sha }) {
           emailProvider: getEmailProvider(parsedRepo, branch, files, sha),
           emailTemplates: getHtmlTemplates(parsedRepo, branch, files, sha, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
           pages: getHtmlTemplates(parsedRepo, branch, files, sha, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
+          roles: getConfigurables(parsedRepo, branch, files, sha, constants.ROLES_DIRECTORY),
           clients: getConfigurables(parsedRepo, branch, files, sha, constants.CLIENTS_DIRECTORY),
           clientGrants: getConfigurables(parsedRepo, branch, files, sha, constants.CLIENTS_GRANTS_DIRECTORY),
           connections: getConfigurables(parsedRepo, branch, files, sha, constants.CONNECTIONS_DIRECTORY),

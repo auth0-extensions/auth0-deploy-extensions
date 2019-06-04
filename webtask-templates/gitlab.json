@@ -1,8 +1,8 @@
 {
   "title": "GitLab Deployments",
   "name": "auth0-gitlab-deploy",
-  "version": "2.9.1",
-  "preVersion": "2.8.1",
+  "version": "2.10.0",
+  "preVersion": "2.9.1",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Hosted Pages, Rules and Custom Database Connections from GitLab.",
   "type": "application",
@@ -20,7 +20,7 @@
   "auth0": {
     "createClient": true,
     "onUninstallPath": "/.extensions/on-uninstall",
-    "scopes": "read:client_grants create:client_grants delete:client_grants update:client_grants read:clients update:clients delete:clients create:clients read:client_keys update:client_keys delete:client_keys create:client_keys read:connections update:connections delete:connections create:connections read:resource_servers update:resource_servers delete:resource_servers create:resource_servers read:rules update:rules delete:rules create:rules read:rules_configs update:rules_configs delete:rules_configs read:email_provider update:email_provider delete:email_provider create:email_provider read:tenant_settings update:tenant_settings read:grants delete:grants read:guardian_factors update:guardian_factors read:email_templates create:email_templates update:email_templates"
+    "scopes": "read:client_grants create:client_grants delete:client_grants update:client_grants read:clients update:clients delete:clients create:clients read:client_keys update:client_keys delete:client_keys create:client_keys read:connections update:connections delete:connections create:connections read:resource_servers update:resource_servers delete:resource_servers create:resource_servers read:rules update:rules delete:rules create:rules read:rules_configs update:rules_configs delete:rules_configs read:email_provider update:email_provider delete:email_provider create:email_provider read:tenant_settings update:tenant_settings read:grants delete:grants read:guardian_factors update:guardian_factors read:email_templates create:email_templates update:email_templates read:roles update:roles delete:roles create:roles"
   },
   "secrets": {
     "REPOSITORY": {
@@ -70,6 +70,23 @@
       "visibleIf": {
         "ENABLE_CIPHER": "true"
       }
+    },
+    "AUTH0_ALLOW_DELETE": {
+      "description": "Allows the extension to delete objects that does not exist within the repository.",
+      "type": "select",
+      "required": true,
+      "default": "false",
+      "allowMultiple": false,
+      "options": [
+        {
+          "value": "false",
+          "text": "No"
+        },
+        {
+          "value": "true",
+          "text": "Yes"
+        }
+      ]
     },
     "SLACK_INCOMING_WEBHOOK_URL": {
       "example": "https://hooks.slack.com/services/...",
