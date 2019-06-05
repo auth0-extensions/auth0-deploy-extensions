@@ -2,7 +2,7 @@ import nock from 'nock';
 import expect from 'expect';
 
 import config from '../../../server/lib/config';
-import { hasChanges, getChanges } from '../../../server/lib/providers/github';
+import { hasChanges, getChanges } from '../../../server/lib/providers/gitlab';
 import files from '../mocks/repo-tree-mock';
 
 const defaultConfig = {
@@ -10,39 +10,50 @@ const defaultConfig = {
   BRANCH: 'master',
   TOKEN: 'secret_token',
   BASE_DIR: 'tenant',
-  HOST: 'test.gh',
-  API_PATH: '/api'
+  URL: 'https://test.gl'
 };
 
 const generateTree = () => {
-  const tree = [];
   const types = Object.keys(files);
 
   for (let i = 0; i < types.length; i++) {
     const type = types[i];
     const items = Object.keys(files[type]);
+    const tree = [];
 
     for (let j = 0; j < items.length; j++) {
       const name = items[j];
 
       const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-      const sha = `${name}.sha`;
       const path = (type === 'database-connections')
         ? `tenant/${type}/test-db/${name}`
         : `tenant/${type}/${name}`;
 
-      tree.push({ type: 'blob', path, sha });
+      tree.push({ type: 'blob', path, name });
 
-      nock('https://test.gh')
-        .get(`/api/repos/test/repo/git/blobs/${sha}`)
+      nock('https://test.gl')
+        .get(`/api/v4/projects/projectId/repository/files/${path.replace(RegExp('/', 'g'), '%2F')}`)
+        .query(() => true)
         .reply(200, { content: new Buffer(content) });
     }
-  }
 
-  return tree;
+    if (type === 'database-connections') {
+      nock('https://test.gl')
+        .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}`)
+        .reply(200, [ { type: 'tree', path: 'tenant/database-connections/test-db', name: 'test-db' } ]);
+
+      nock('https://test.gl')
+        .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}%2Ftest-db`)
+        .reply(200, tree);
+    } else {
+      nock('https://test.gl')
+        .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}`)
+        .reply(200, tree);
+    }
+  }
 };
 
-describe('github', () => {
+describe('gitlab', () => {
   before((done) => {
     config.setProvider((key) => defaultConfig[key], null);
     return done();
@@ -100,13 +111,9 @@ describe('github', () => {
 
   describe('getChanges', () => {
     it('should get and format files', (done) => {
-      const repo = { tree: generateTree() };
+      generateTree();
 
-      nock('https://test.gh')
-        .get('/api/repos/test/repo/git/trees/sha?recursive=true&access_token=secret_token')
-        .reply(200, repo);
-
-      getChanges({ repository: 'test/repo', branch: 'branch', sha: 'sha' })
+      getChanges({ projectId: 'projectId', branch: 'branch' })
         .then(results => {
           // rules
           expect(results.rules).toBeAn('array');

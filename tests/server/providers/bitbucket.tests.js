@@ -2,111 +2,75 @@ import nock from 'nock';
 import expect from 'expect';
 
 import config from '../../../server/lib/config';
-import { hasChanges, getChanges } from '../../../server/lib/providers/github';
+import { getChanges } from '../../../server/lib/providers/bitbucket';
 import files from '../mocks/repo-tree-mock';
 
 const defaultConfig = {
   REPOSITORY: 'test/auth0',
   BRANCH: 'master',
-  TOKEN: 'secret_token',
-  BASE_DIR: 'tenant',
-  HOST: 'test.gh',
-  API_PATH: '/api'
+  USER: 'user',
+  PASSWORD: 'password',
+  BASE_DIR: 'tenant'
 };
 
 const generateTree = () => {
-  const tree = [];
   const types = Object.keys(files);
 
   for (let i = 0; i < types.length; i++) {
     const type = types[i];
     const items = Object.keys(files[type]);
+    const tree = [];
 
     for (let j = 0; j < items.length; j++) {
       const name = items[j];
 
       const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-      const sha = `${name}.sha`;
       const path = (type === 'database-connections')
         ? `tenant/${type}/test-db/${name}`
         : `tenant/${type}/${name}`;
 
-      tree.push({ type: 'blob', path, sha });
+      tree.push({ type: 'blob', path, name });
 
-      nock('https://test.gh')
-        .get(`/api/repos/test/repo/git/blobs/${sha}`)
-        .reply(200, { content: new Buffer(content) });
+      nock('https://api.bitbucket.org')
+        .get(`/2.0/repositories/test/auth0/src/sha/${path}`)
+        .query(() => true)
+        .reply(200, content);
+    }
+
+    if (type === 'database-connections') {
+      nock('https://api.bitbucket.org')
+        .get('/2.0/repositories/test/auth0/src/sha/tenant/database-connections')
+        .query(() => true)
+        .reply(200, { values: [ { type: 'commit_directory', path: 'tenant/database-connections/test-db' } ] });
+
+      nock('https://api.bitbucket.org')
+        .get('/2.0/repositories/test/auth0/src/sha/tenant/database-connections/test-db')
+        .query(() => true)
+        .reply(200, { values: tree });
+    } else {
+      nock('https://api.bitbucket.org')
+        .get(`/2.0/repositories/test/auth0/src/sha/tenant/${type}`)
+        .query(() => true)
+        .reply(200, { values: tree });
     }
   }
-
-  return tree;
 };
 
-describe('github', () => {
+describe('bitbucket', () => {
   before((done) => {
     config.setProvider((key) => defaultConfig[key], null);
     return done();
   });
 
-  describe('hasChanges', () => {
-    it('should return true if something was added to the tenant config', (done) => {
-      const commit = {
-        added: [ 'tenant/rules/rule1.js' ]
-      };
-
-      expect(hasChanges([ commit ])).toEqual(true);
-      done();
-    });
-
-    it('should return true if something was modified in the tenant config', (done) => {
-      const commit = {
-        modified: [ 'tenant/rules/rule1.js' ]
-      };
-
-      expect(hasChanges([ commit ])).toEqual(true);
-      done();
-    });
-
-    it('should return true if something was removed from the tenant config', (done) => {
-      const commit = {
-        removed: [ 'tenant/rules/rule1.js' ]
-      };
-
-      expect(hasChanges([ commit ])).toEqual(true);
-      done();
-    });
-
-    it('should return false if changes are unrelated to the tenant config', (done) => {
-      const commit = {
-        added: [ 'rules/rule1.js' ],
-        modified: [ 'tenant/readme.md' ],
-        removed: [ 'whatever.js', 'somedir/somefile.txt' ]
-      };
-
-      expect(hasChanges([ commit ])).toEqual(false);
-      done();
-    });
-
-    it('should return true if there are at least one commit is relevant', (done) => {
-      const commits = [
-        { modified: [ 'tenant/readme.md' ] },
-        { modified: [ 'tenant/rules/rule.js' ] }
-      ];
-
-      expect(hasChanges(commits)).toEqual(true);
-      done();
-    });
-  });
-
   describe('getChanges', () => {
     it('should get and format files', (done) => {
-      const repo = { tree: generateTree() };
+      generateTree();
 
-      nock('https://test.gh')
-        .get('/api/repos/test/repo/git/trees/sha?recursive=true&access_token=secret_token')
-        .reply(200, repo);
+      nock('https://api.bitbucket.org')
+        .get('/2.0/repositories/test/auth0')
+        .reply(200);
 
-      getChanges({ repository: 'test/repo', branch: 'branch', sha: 'sha' })
+      getChanges({ repository: 'test/auth0', branch: 'branch', sha: 'sha' })
         .then(results => {
           // rules
           expect(results.rules).toBeAn('array');
