@@ -18,7 +18,7 @@
     "test:clean": "rimraf ./coverage && rimraf ./.nyc_output",
     "test:pre": "npm run test:clean",
     "test:watch": "npm run test:pre && cross-env NODE_ENV=test mocha tests/mocha.js ./tests/**/*.tests.js --watch",
-    "test": "npm run test:pre && cross-env NODE_ENV=test cross-env A0EXT_PROVIDER=github nyc mocha tests/mocha.js './tests/**/*.tests.js'"
+    "test": "npm run test:pre && cross-env NODE_ENV=test cross-env A0EXT_PROVIDER=github mocha tests/mocha.js './tests/**/*.tests.js'"
   },
   "keywords": [
     "auth0",
@@ -181,6 +181,7 @@
     "redux-simple-router": "^2.0.4",
     "redux-static": "^1.0.0",
     "rimraf": "^2.5.2",
+    "sinon": "^7.3.2",
     "style-loader": "0.16.0",
     "url-loader": "^0.5.7",
     "webpack": "1.13.3",
