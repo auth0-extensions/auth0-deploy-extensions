@@ -5,13 +5,14 @@ import config from '../config';
 
 
 const parse = (headers, { ref = '', commits = [], project = {}, project_id = '', user_email = '', event_name = '', checkout_sha = '' }) => { // eslint-disable-line camelcase
-  const refParts = ref.split('/');
+  // If the ref starts with "refs/heads/", strip it
+  const branch = ref.replace(/^refs\/heads\//i, '');
 
   return {
     id: checkout_sha,
     projectId: project_id,
     event: event_name,
-    branch: refParts.length === 3 ? refParts[2] : '',
+    branch: branch,
     commits,
     repository: project.path_with_namespace,
     user: user_email,
