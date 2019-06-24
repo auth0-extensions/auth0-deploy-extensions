@@ -50,8 +50,9 @@ export const hasChanges = (changesetId) =>
 const getConfigurableTree = (project, directory) =>
   new Promise((resolve, reject) => {
     try {
+      const dir = directory ? `/${directory}` : '';
       getApi()
-        .then(api => api.getItems(project, `${utils.getPrefix()}/${directory}`))
+        .then(api => api.getItems(project, `${utils.getPrefix()}${dir}`))
         .then(data => {
           if (!data) {
             return resolve([]);
@@ -131,6 +132,7 @@ const getTree = (project, changesetId) =>
   new Promise((resolve, reject) => {
     // Getting separate trees for rules and connections, as tfsvc does not provide full (recursive) tree
     const promises = {
+      tenant: getConfigurableTree(project, ''),
       rules: getConfigurableTree(project, constants.RULES_DIRECTORY),
       databases: getConnectionsTree(project, changesetId),
       emails: getConfigurableTree(project, constants.EMAIL_TEMPLATES_DIRECTORY),
@@ -145,6 +147,7 @@ const getTree = (project, changesetId) =>
 
     return Promise.props(promises)
       .then(result => resolve(_.union(
+        result.tenant,
         result.rules,
         result.databases,
         result.emails,
@@ -342,6 +345,12 @@ const getHtmlTemplates = (changesetId, files, dir, allowedNames) => {
 };
 
 /*
+ * Get tenant settings.
+ */
+const getTenant = (changesetId, files) =>
+  downloadConfigurable(changesetId, 'tenant', { configFile: _.find(files, f => utils.isTenantFile(f.path)) });
+
+/*
  * Get email provider.
  */
 const getEmailProvider = (changesetId, files) =>
@@ -359,6 +368,7 @@ export const getChanges = ({ project, changesetId }) =>
       })), null, 2)}`);
 
       const promises = {
+        tenant: getTenant(changesetId, files),
         rules: getRules(changesetId, files),
         databases: getDatabaseData(changesetId, files),
         emailProvider: getEmailProvider(changesetId, files),

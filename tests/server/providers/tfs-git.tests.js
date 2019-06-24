@@ -28,18 +28,28 @@ const generateTree = () => {
     const type = types[i];
     const items = Object.keys(files[type]);
 
-    for (let j = 0; j < items.length; j++) {
-      const name = items[j];
-
-      const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-      const sha = `${name}.sha`;
-      const path = (type === 'database-connections')
-        ? `tenant/${type}/test-db/${name}`
-        : `tenant/${type}/${name}`;
+    if (type === 'tenant.json') {
+      const content = JSON.stringify(files[type]);
+      const sha = `${type}.sha`;
+      const path = `tenant/${type}`;
 
       contentsById[sha] = { on: (event, cb) => cb(content) };
 
       tree.push({ gitObjectType: 3, relativePath: path, objectId: sha });
+    } else {
+      for (let j = 0; j < items.length; j++) {
+        const name = items[j];
+
+        const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
+        const sha = `${name}.sha`;
+        const path = (type === 'database-connections')
+          ? `tenant/${type}/test-db/${name}`
+          : `tenant/${type}/${name}`;
+
+        contentsById[sha] = { on: (event, cb) => cb(content) };
+
+        tree.push({ gitObjectType: 3, relativePath: path, objectId: sha });
+      }
     }
   }
 

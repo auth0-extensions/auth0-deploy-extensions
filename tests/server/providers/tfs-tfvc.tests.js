@@ -10,18 +10,32 @@ import expectedResults from '../mocks/expected-data';
 
 
 const defaultConfig = {
+  TYPE: 'tfvc',
   INSTANCE: 'test-instance',
   COLLECTION: 'defaultCollection',
   REPOSITORY: 'test/auth0',
   BRANCH: 'master',
   AUTH_METHOD: 'pat',
   TOKEN: 'secret_token',
-  BASE_DIR: 'tenant'
+  PROJECT_PATH: '$/TFVC-test/tenant'
 };
 
 const generateTreeByDir = (dir) => {
   const tree = [];
   let type = dir.split('/').pop();
+
+  if (type === 'tenant') {
+    const content = JSON.stringify(files['tenant.json']);
+    const path = '$/TFVC-test/tenant/tenant.json';
+
+    nock('https://test-instance.visualstudio.com')
+      .get(`/defaultCollection/_apis/tfvc/items?path=${path}&api-version=5.0&includeContent=true`)
+      .reply(200, { content });
+
+    tree.push({ path, size: 1 });
+
+    return tree;
+  }
 
   if (type === 'database-connections') {
     tree.push({ isFolder: true, path: 'tenant/database-connections/test-db' });
@@ -39,8 +53,8 @@ const generateTreeByDir = (dir) => {
 
     const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
     const path = (type === 'database-connections')
-      ? `tenant/${type}/test-db/${name}`
-      : `tenant/${type}/${name}`;
+      ? `$/TFVC-test/tenant/${type}/test-db/${name}`
+      : `$/TFVC-test/tenant/${type}/${name}`;
 
     nock('https://test-instance.visualstudio.com')
       .get(`/defaultCollection/_apis/tfvc/items?path=${path}&api-version=5.0&includeContent=true`)
@@ -78,7 +92,7 @@ describe('tfs-tfvc', () => {
 
   describe('hasChanges', () => {
     it('should return true if something has been changed', (done) => {
-      const data = [ { item: { path: 'tenant/rules/rule1.js' } } ];
+      const data = [ { item: { path: '$/TFVC-test/tenant/rules/rule1.js' } } ];
 
       tfvcApi.getChangesetChanges = () => Promise.resolve(data);
 
@@ -91,7 +105,7 @@ describe('tfs-tfvc', () => {
     });
 
     it('should return false if changes are irrelevant', (done) => {
-      const data = [ { item: { path: 'tenant/readme.md' } } ];
+      const data = [ { item: { path: '$/TFVC-test/tenant/readme.md' } } ];
 
       tfvcApi.getChangesetChanges = () => Promise.resolve(data);
 
@@ -105,9 +119,9 @@ describe('tfs-tfvc', () => {
 
     it('should return true if some of changes are relevant', (done) => {
       const data = [
-        { item: { path: 'tenant/readme.md' } },
-        { item: { path: 'package.json' } },
-        { item: { path: 'tenant/rules/rule1.js' } }
+        { item: { path: '$/TFVC-test/tenant/readme.md' } },
+        { item: { path: '$/TFVC-test/package.json' } },
+        { item: { path: '$/TFVC-test/tenant/rules/rule1.js' } }
       ];
 
       tfvcApi.getChangesetChanges = () => Promise.resolve(data);

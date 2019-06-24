@@ -286,6 +286,12 @@ const getHtmlTemplates = (repositoryId, branch, files, dir, allowedNames) => {
 };
 
 /*
+ * Get tenant settings.
+ */
+const getTenant = (projectId, branch, files) =>
+  downloadConfigurable(projectId, branch, 'tenant', { configFile: _.find(files, f => utils.isTenantFile(f.path)) });
+
+/*
  * Get email provider.
  */
 const getEmailProvider = (projectId, branch, files) =>
@@ -304,6 +310,7 @@ export const getChanges = ({ repositoryId, branch }) =>
       })), null, 2)}`);
 
       const promises = {
+        tenant: getTenant(repositoryId, branch, files),
         rules: getRules(repositoryId, branch, files),
         databases: getDatabaseData(repositoryId, branch, files),
         emailProvider: getEmailProvider(repositoryId, branch, files),
