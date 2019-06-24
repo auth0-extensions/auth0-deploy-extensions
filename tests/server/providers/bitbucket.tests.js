@@ -22,6 +22,23 @@ const generateTree = () => {
     const items = Object.keys(files[type]);
     const tree = [];
 
+    if (type === 'tenant.json') {
+      const content = JSON.stringify(files[type]);
+      const path = `tenant/${type}`;
+
+      tree.push({ type: 'blob', path, name: 'tenant.json' });
+
+      nock('https://api.bitbucket.org')
+        .get('/2.0/repositories/test/auth0/src/sha/tenant/')
+        .query(() => true)
+        .reply(200, { values: tree });
+
+      nock('https://api.bitbucket.org')
+        .get(`/2.0/repositories/test/auth0/src/sha/${path}`)
+        .query(() => true)
+        .reply(200, content);
+    }
+
     for (let j = 0; j < items.length; j++) {
       const name = items[j];
 
@@ -57,7 +74,7 @@ const generateTree = () => {
   }
 };
 
-describe('bitbucket', () => {
+describe.only('bitbucket', () => {
   before((done) => {
     config.setProvider((key) => defaultConfig[key], null);
     return done();

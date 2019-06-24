@@ -37,7 +37,13 @@ const isTemplate = (file, dir, allowedNames) =>
   file.indexOf(`${path.join(getPrefix(), dir)}/`) === 0 && allowedNames.indexOf(file.split('/').pop()) >= 0;
 
 /*
- * Check if a file is part of the pages folder.
+ * Check if a file is the tenant settings file.
+ */
+const isTenantFile = (file) =>
+  file === path.join(getPrefix(), 'tenant.json');
+
+/*
+ * Check if a file is the email provider file.
  */
 const isEmailProvider = (file) =>
   file === path.join(getPrefix(), constants.EMAIL_TEMPLATES_DIRECTORY, 'provider.json');
@@ -94,6 +100,8 @@ const validFilesOnly = (fileName) => {
   if (isTemplate(fileName, constants.PAGES_DIRECTORY, constants.PAGE_NAMES)) {
     return true;
   } else if (isTemplate(fileName, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES)) {
+    return true;
+  } else if (isTenantFile(fileName)) {
     return true;
   } else if (isEmailProvider(fileName)) {
     return true;
@@ -234,6 +242,11 @@ const extractFileContent = (item) => {
   return item || {};
 };
 
+const hoursAsInteger = (property, hours) => {
+  if (Number.isInteger(hours)) return { [property]: hours };
+  return { [`${property}_in_minutes`]: Math.round(hours * 60) };
+};
+
 const unifyItem = (item, type) => {
   switch (type) {
     default:
@@ -260,6 +273,17 @@ const unifyItem = (item, type) => {
     case 'clientGrants':
     case 'emailProvider': {
       const data = extractFileContent(item.configFile);
+
+      return ({ ...data });
+    }
+
+    case 'tenant': {
+      const data = extractFileContent(item.configFile);
+      Object.assign(
+        data,
+        data.session_lifetime && hoursAsInteger('session_lifetime', data.session_lifetime),
+        data.idle_session_lifetime && hoursAsInteger('idle_session_lifetime', data.idle_session_lifetime)
+      );
 
       return ({ ...data });
     }
@@ -367,6 +391,7 @@ module.exports = {
   isRule,
   isDatabaseConnection,
   isTemplate,
+  isTenantFile,
   isEmailProvider,
   isConfigurable,
   getDatabaseFiles,

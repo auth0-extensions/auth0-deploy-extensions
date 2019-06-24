@@ -104,6 +104,7 @@ const getTree = (parsedRepo, branch, sha) => {
   };
   const promises = {
     databases: getDBConnectionsTree(params),
+    tenant: getTreeByDir(params, ''),
     rules: getTreeByDir(params, constants.RULES_DIRECTORY),
     pages: getTreeByDir(params, constants.PAGES_DIRECTORY),
     roles: getTreeByDir(params, constants.ROLES_DIRECTORY),
@@ -118,6 +119,7 @@ const getTree = (parsedRepo, branch, sha) => {
     .then((result) => (_.union(
       result.rules,
       result.databases,
+      result.tenant,
       result.emails,
       result.pages,
       result.roles,
@@ -220,6 +222,14 @@ const getRules = (parsedRepo, branch, files, shaToken) => {
   // Download all rules.
   return Promise.map(Object.keys(rules), (ruleName) =>
     downloadRule(parsedRepo, branch, ruleName, rules[ruleName], shaToken), { concurrency: 2 });
+};
+
+/*
+ * Try to download tenant settings.
+ */
+const getTenant = (parsedRepo, branch, files, shaToken) => {
+  const tenantFile = { configFile: _.find(files, f => utils.isTenantFile(f.path)) };
+  return downloadConfigurable(parsedRepo, branch, 'tenant', tenantFile, shaToken);
 };
 
 /*
@@ -332,6 +342,7 @@ export function getChanges({ repository, branch, sha }) {
         })), null, 2)}`);
 
         const promises = {
+          tenant: getTenant(parsedRepo, branch, files, sha),
           rules: getRules(parsedRepo, branch, files, sha),
           databases: getDatabaseData(parsedRepo, branch, files, sha),
           emailProvider: getEmailProvider(parsedRepo, branch, files, sha),
