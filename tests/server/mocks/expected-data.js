@@ -116,7 +116,6 @@ module.exports = {
     friendly_name: 'My Company',
     support_email: 'support@company.com',
     session_lifetime_in_minutes: 74,
-    session_lifetime: 1.23,
     default_directory: 'users',
     sandbox_version: '4',
     idle_session_lifetime: 72

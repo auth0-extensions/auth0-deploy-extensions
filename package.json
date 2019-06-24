@@ -1,6 +1,6 @@
 {
   "name": "auth0-deploy-extensions",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Auth0 Deployment Extensions",
   "engines": {
     "node": "5.9.0"
@@ -18,7 +18,7 @@
     "test:clean": "rimraf ./coverage && rimraf ./.nyc_output",
     "test:pre": "npm run test:clean",
     "test:watch": "npm run test:pre && cross-env NODE_ENV=test mocha tests/mocha.js ./tests/**/*.tests.js --watch",
-    "test": "npm run test:pre && cross-env NODE_ENV=test cross-env A0EXT_PROVIDER=github mocha tests/mocha.js './tests/**/*.tests.js'"
+    "test": "npm run test:pre && cross-env NODE_ENV=test cross-env A0EXT_PROVIDER=github nyc mocha tests/mocha.js './tests/**/*.tests.js'"
   },
   "keywords": [
     "auth0",

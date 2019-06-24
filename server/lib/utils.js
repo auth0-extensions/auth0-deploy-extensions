@@ -242,9 +242,12 @@ const extractFileContent = (item) => {
   return item || {};
 };
 
-const hoursAsInteger = (property, hours) => {
-  if (Number.isInteger(hours)) return { [property]: hours };
-  return { [`${property}_in_minutes`]: Math.round(hours * 60) };
+const checkSessionLifetime = (data, property) => {
+  const hours = data[property];
+  if (hours !== undefined && !Number.isInteger(hours)) {
+    data[`${property}_in_minutes`] = Math.round(hours * 60);
+    delete data[property];
+  }
 };
 
 const unifyItem = (item, type) => {
@@ -279,11 +282,8 @@ const unifyItem = (item, type) => {
 
     case 'tenant': {
       const data = extractFileContent(item.configFile);
-      Object.assign(
-        data,
-        data.session_lifetime && hoursAsInteger('session_lifetime', data.session_lifetime),
-        data.idle_session_lifetime && hoursAsInteger('idle_session_lifetime', data.idle_session_lifetime)
-      );
+      checkSessionLifetime(data, 'session_lifetime');
+      checkSessionLifetime(data, 'idle_session_lifetime');
 
       return ({ ...data });
     }
