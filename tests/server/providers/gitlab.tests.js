@@ -22,34 +22,50 @@ const generateTree = () => {
     const items = Object.keys(files[type]);
     const tree = [];
 
-    for (let j = 0; j < items.length; j++) {
-      const name = items[j];
+    if (type === 'tenant.json') {
+      const content = JSON.stringify(files[type]);
+      const path = `tenant/${type}`;
 
-      const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-      const path = (type === 'database-connections')
-        ? `tenant/${type}/test-db/${name}`
-        : `tenant/${type}/${name}`;
-
-      tree.push({ type: 'blob', path, name });
+      tree.push({ type: 'blob', path, name: 'tenant.json' });
 
       nock('https://test.gl')
         .get(`/api/v4/projects/projectId/repository/files/${path.replace(RegExp('/', 'g'), '%2F')}`)
         .query(() => true)
         .reply(200, { content: new Buffer(content) });
-    }
-
-    if (type === 'database-connections') {
-      nock('https://test.gl')
-        .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}`)
-        .reply(200, [ { type: 'tree', path: 'tenant/database-connections/test-db', name: 'test-db' } ]);
 
       nock('https://test.gl')
-        .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}%2Ftest-db`)
+        .get('/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F')
         .reply(200, tree);
     } else {
-      nock('https://test.gl')
-        .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}`)
-        .reply(200, tree);
+      for (let j = 0; j < items.length; j++) {
+        const name = items[j];
+
+        const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
+        const path = (type === 'database-connections')
+          ? `tenant/${type}/test-db/${name}`
+          : `tenant/${type}/${name}`;
+
+        tree.push({ type: 'blob', path, name });
+
+        nock('https://test.gl')
+          .get(`/api/v4/projects/projectId/repository/files/${path.replace(RegExp('/', 'g'), '%2F')}`)
+          .query(() => true)
+          .reply(200, { content: new Buffer(content) });
+      }
+
+      if (type === 'database-connections') {
+        nock('https://test.gl')
+          .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}`)
+          .reply(200, [ { type: 'tree', path: 'tenant/database-connections/test-db', name: 'test-db' } ]);
+
+        nock('https://test.gl')
+          .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}%2Ftest-db`)
+          .reply(200, tree);
+      } else {
+        nock('https://test.gl')
+          .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}`)
+          .reply(200, tree);
+      }
     }
   }
 };

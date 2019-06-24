@@ -255,6 +255,17 @@ const getEmailProvider = (repository, branch, files) =>
     );
 
 /*
+ * Get tenant settings.
+ */
+const getTenant = (repository, branch, files) =>
+  downloadConfigurable(
+    repository,
+    branch,
+    'tenant',
+    { configFile: _.find(files, f => utils.isTenantFile(f.path)) }
+    );
+
+/*
  * Get all configurables (resource servers / clients).
  */
 const getConfigurables = (repository, branch, files, directory) => {
@@ -277,6 +288,7 @@ export const getChanges = ({ repository, branch, sha }) =>
 
       const promises = {
         rules: getRules(repository, branch, files),
+        tenant: getTenant(repository, branch, files),
         databases: getDatabaseData(repository, branch, files),
         emailProvider: getEmailProvider(repository, branch, files),
         emailTemplates: getHtmlTemplates(repository, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),

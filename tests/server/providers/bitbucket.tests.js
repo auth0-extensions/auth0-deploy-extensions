@@ -37,22 +37,22 @@ const generateTree = () => {
         .get(`/2.0/repositories/test/auth0/src/sha/${path}`)
         .query(() => true)
         .reply(200, content);
-    }
+    } else {
+      for (let j = 0; j < items.length; j++) {
+        const name = items[j];
 
-    for (let j = 0; j < items.length; j++) {
-      const name = items[j];
+        const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
+        const path = (type === 'database-connections')
+          ? `tenant/${type}/test-db/${name}`
+          : `tenant/${type}/${name}`;
 
-      const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-      const path = (type === 'database-connections')
-        ? `tenant/${type}/test-db/${name}`
-        : `tenant/${type}/${name}`;
+        tree.push({ type: 'blob', path, name });
 
-      tree.push({ type: 'blob', path, name });
-
-      nock('https://api.bitbucket.org')
-        .get(`/2.0/repositories/test/auth0/src/sha/${path}`)
-        .query(() => true)
-        .reply(200, content);
+        nock('https://api.bitbucket.org')
+          .get(`/2.0/repositories/test/auth0/src/sha/${path}`)
+          .query(() => true)
+          .reply(200, content);
+      }
     }
 
     if (type === 'database-connections') {
@@ -74,7 +74,7 @@ const generateTree = () => {
   }
 };
 
-describe.only('bitbucket', () => {
+describe('bitbucket', () => {
   before((done) => {
     config.setProvider((key) => defaultConfig[key], null);
     return done();

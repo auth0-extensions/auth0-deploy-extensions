@@ -24,20 +24,32 @@ const generateTree = () => {
     const type = types[i];
     const items = Object.keys(files[type]);
 
-    for (let j = 0; j < items.length; j++) {
-      const name = items[j];
-
-      const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-      const sha = `${name}.sha`;
-      const path = (type === 'database-connections')
-        ? `tenant/${type}/test-db/${name}`
-        : `tenant/${type}/${name}`;
+    if (type === 'tenant.json') {
+      const content = JSON.stringify(files[type]);
+      const path = `tenant/${type}`;
+      const sha = `${type}.sha`;
 
       tree.push({ type: 'blob', path, sha });
 
       nock('https://test.gh')
         .get(`/api/repos/test/repo/git/blobs/${sha}`)
         .reply(200, { content: new Buffer(content) });
+    } else {
+      for (let j = 0; j < items.length; j++) {
+        const name = items[j];
+
+        const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
+        const sha = `${name}.sha`;
+        const path = (type === 'database-connections')
+          ? `tenant/${type}/test-db/${name}`
+          : `tenant/${type}/${name}`;
+
+        tree.push({ type: 'blob', path, sha });
+
+        nock('https://test.gh')
+          .get(`/api/repos/test/repo/git/blobs/${sha}`)
+          .reply(200, { content: new Buffer(content) });
+      }
     }
   }
 

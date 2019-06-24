@@ -56,7 +56,8 @@ const getTreeByPath = (projectId, branch, directory) =>
       .filter(f => utils.validFilesOnly(f.path));
 
     files.forEach((elem, idx) => {
-      files[idx].path = `${utils.getBaseDir()}${directory}/${elem.name}`;
+      const dir = directory ? `${directory}/` : '';
+      files[idx].path = `${utils.getBaseDir()}${dir}${elem.name}`;
     });
     return files;
   });
@@ -115,6 +116,7 @@ const getDBConnectionsTree = (projectId, branch) =>
 const getTree = (projectId, branch) => {
   // Getting separate trees for rules and connections, as GitLab does not provide full (recursive) tree
   const promises = {
+    tenant: getTreeByPath(projectId, branch, ''),
     rules: getTreeByPath(projectId, branch, constants.RULES_DIRECTORY),
     databases: getDBConnectionsTree(projectId, branch),
     emails: getTreeByPath(projectId, branch, constants.EMAIL_TEMPLATES_DIRECTORY),
@@ -129,6 +131,7 @@ const getTree = (projectId, branch) => {
 
   return Promise.props(promises)
     .then((result) => (_.union(
+      result.tenant,
       result.rules,
       result.databases,
       result.emails,
@@ -314,6 +317,12 @@ const getHtmlTemplates = (projectId, branch, files, dir, allowedNames) => {
 };
 
 /*
+ * Get tenant settings.
+ */
+const getTenant = (projectId, branch, files) =>
+  downloadConfigurable(projectId, branch, 'tenant', { configFile: _.find(files, f => utils.isTenantFile(f.path)) });
+
+/*
  * Get email provider.
  */
 const getEmailProvider = (projectId, branch, files) =>
@@ -328,6 +337,7 @@ export const getChanges = ({ projectId, branch }) =>
       logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({ name: file.path, id: file.id })), null, 2)}`);
 
       const promises = {
+        tenant: getTenant(projectId, branch, files),
         rules: getRules(projectId, branch, files),
         databases: getDatabaseData(projectId, branch, files),
         emailProvider: getEmailProvider(projectId, branch, files),
