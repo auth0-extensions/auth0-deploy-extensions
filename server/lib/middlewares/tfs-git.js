@@ -4,14 +4,15 @@ import { hasChanges } from '../providers/tfs-git';
 import config from '../config';
 
 const parse = ({ notificationId = '', resource = {}, eventType = '' }) => {
-  const refParts = resource.refUpdates[0].name.split('/');
   const checkoutSha = resource.refUpdates[0].newObjectId;
+  // If the ref starts with "refs/heads/", strip it
+  const branch = resource.refUpdates[0].name.replace(/^refs\/heads\//i, '');
 
   return {
     id: notificationId,
     repositoryId: resource.repository.id,
     event: eventType,
-    branch: refParts.length === 3 ? refParts[2] : '',
+    branch: branch,
     commitId: checkoutSha,
     repository: resource.repository.name,
     user: resource.pushedBy.uniqueName,
@@ -29,10 +30,14 @@ module.exports = () => (req, res, next) => {
   }
 
   const result = parse(req.body);
-
   // Only accept push requests.
   if (result.event !== 'git.push') {
     return res.status(202).json({ message: `Request ignored, the '${result.event}' event is not supported.` });
+  }
+
+  // Only for the active branch.
+  if (result.branch !== config('BRANCH')) {
+    return res.status(202).json({ message: `Request ignored, '${result.branch}' is not the active branch.` });
   }
 
   // Only run if there really are changes.
