@@ -41,13 +41,12 @@ const generateTree = () => {
         const name = items[j];
 
         const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-        const sha = `${name}.sha`;
+        const sha = `${type}-${name}.sha`;
         const path = (type === 'database-connections')
           ? `tenant/${type}/test-db/${name}`
           : `tenant/${type}/${name}`;
 
         contentsById[sha] = { on: (event, cb) => cb(content) };
-
         tree.push({ gitObjectType: 3, relativePath: path, objectId: sha });
       }
     }

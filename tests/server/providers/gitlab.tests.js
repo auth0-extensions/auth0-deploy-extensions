@@ -63,7 +63,7 @@ const generateTree = () => {
           .reply(200, tree);
       } else {
         nock('https://test.gl')
-          .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}`)
+          .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type.replace(RegExp('/', 'g'), '%2F')}`)
           .reply(200, tree);
       }
     }

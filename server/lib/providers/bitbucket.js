@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import path from 'path';
 import Promise from 'bluebird';
 import { constants } from 'auth0-source-control-extension-tools';
 
@@ -109,6 +110,9 @@ const getTree = (parsedRepo, branch, sha) => {
     pages: getTreeByDir(params, constants.PAGES_DIRECTORY),
     roles: getTreeByDir(params, constants.ROLES_DIRECTORY),
     emails: getTreeByDir(params, constants.EMAIL_TEMPLATES_DIRECTORY),
+    guardianFactors: getTreeByDir(params, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+    guardianFactorTemplates: getTreeByDir(params, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+    guardianFactorProviders: getTreeByDir(params, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
     clientGrants: getTreeByDir(params, constants.CLIENTS_GRANTS_DIRECTORY),
     connections: getTreeByDir(params, constants.CONNECTIONS_DIRECTORY),
     clients: getTreeByDir(params, constants.CLIENTS_DIRECTORY),
@@ -121,6 +125,9 @@ const getTree = (parsedRepo, branch, sha) => {
       result.databases,
       result.tenant,
       result.emails,
+      result.guardianFactors,
+      result.guardianFactorTemplates,
+      result.guardianFactorProviders,
       result.pages,
       result.roles,
       result.clients,
@@ -347,6 +354,9 @@ export function getChanges({ repository, branch, sha }) {
           databases: getDatabaseData(parsedRepo, branch, files, sha),
           emailProvider: getEmailProvider(parsedRepo, branch, files, sha),
           emailTemplates: getHtmlTemplates(parsedRepo, branch, files, sha, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+          guardianFactors: getConfigurables(parsedRepo, branch, files, sha, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+          guardianFactorTemplates: getConfigurables(parsedRepo, branch, files, sha, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+          guardianFactorProviders: getConfigurables(parsedRepo, branch, files, sha, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
           pages: getHtmlTemplates(parsedRepo, branch, files, sha, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
           roles: getConfigurables(parsedRepo, branch, files, sha, constants.ROLES_DIRECTORY),
           clients: getConfigurables(parsedRepo, branch, files, sha, constants.CLIENTS_DIRECTORY),

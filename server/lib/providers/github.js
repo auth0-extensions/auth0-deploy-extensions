@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import path from 'path';
 import axios from 'axios';
 import Promise from 'bluebird';
 import GitHubApi from 'github';
@@ -292,6 +293,9 @@ export const getChanges = ({ repository, branch, sha }) =>
         databases: getDatabaseData(repository, branch, files),
         emailProvider: getEmailProvider(repository, branch, files),
         emailTemplates: getHtmlTemplates(repository, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+        guardianFactors: getConfigurables(repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+        guardianFactorTemplates: getConfigurables(repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+        guardianFactorProviders: getConfigurables(repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
         pages: getHtmlTemplates(repository, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
         roles: getConfigurables(repository, branch, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(repository, branch, files, constants.CLIENTS_DIRECTORY),

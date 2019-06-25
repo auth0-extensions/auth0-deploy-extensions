@@ -21,8 +21,10 @@ const defaultConfig = {
 };
 
 const generateTreeByDir = (dir) => {
+  const splitDir = dir.split('/');
+  let type = splitDir.pop();
+  const subType = splitDir.pop();
   const tree = [];
-  let type = dir.split('/').pop();
 
   if (type === 'tenant') {
     const content = JSON.stringify(files['tenant.json']);
@@ -44,6 +46,10 @@ const generateTreeByDir = (dir) => {
 
   if (type === 'test-db') {
     type = 'database-connections';
+  }
+
+  if (subType === 'guardian') {
+    type = `${subType}/${type}`;
   }
 
   const items = Object.keys(files[type]);

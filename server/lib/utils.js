@@ -49,6 +49,19 @@ const isEmailProvider = (file) =>
   file === path.join(getPrefix(), constants.EMAIL_TEMPLATES_DIRECTORY, 'provider.json');
 
 /*
+ * Check if a file is the guardian file.
+ */
+const isGuardianFile = (file) => {
+  const guardianDir = path.join(getPrefix(), constants.GUARDIAN_DIRECTORY);
+  const isJSON = file.endsWith('.json');
+  const isGuardian = file.startsWith(path.join(guardianDir, constants.GUARDIAN_FACTORS_DIRECTORY))
+    || file.startsWith(path.join(guardianDir, constants.GUARDIAN_PROVIDERS_DIRECTORY))
+    || file.startsWith(path.join(guardianDir, constants.GUARDIAN_TEMPLATES_DIRECTORY));
+
+  return isJSON && isGuardian;
+}
+
+/*
  * Check if a file is part of configurable folder.
  */
 const isConfigurable = (file, directory) =>
@@ -104,6 +117,8 @@ const validFilesOnly = (fileName) => {
   } else if (isTenantFile(fileName)) {
     return true;
   } else if (isEmailProvider(fileName)) {
+    return true;
+  } else if (isGuardianFile(fileName)) {
     return true;
   } else if (isRule(fileName)) {
     return /\.(js|json)$/i.test(fileName);
@@ -274,6 +289,9 @@ const unifyItem = (item, type) => {
     }
     case 'roles':
     case 'clientGrants':
+    case 'guardianFactors':
+    case 'guardianFactorTemplates':
+    case 'guardianFactorProviders':
     case 'emailProvider': {
       const data = extractFileContent(item.configFile);
 
@@ -392,6 +410,7 @@ module.exports = {
   isDatabaseConnection,
   isTemplate,
   isTenantFile,
+  isGuardianFile,
   isEmailProvider,
   isConfigurable,
   getDatabaseFiles,

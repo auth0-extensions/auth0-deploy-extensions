@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import path from 'path';
 import axios from 'axios';
 import Promise from 'bluebird';
 import { constants } from 'auth0-source-control-extension-tools';
@@ -136,6 +137,9 @@ const getTree = (project, changesetId) =>
       rules: getConfigurableTree(project, constants.RULES_DIRECTORY),
       databases: getConnectionsTree(project, changesetId),
       emails: getConfigurableTree(project, constants.EMAIL_TEMPLATES_DIRECTORY),
+      guardianFactors: getConfigurableTree(project, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+      guardianFactorTemplates: getConfigurableTree(project, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+      guardianFactorProviders: getConfigurableTree(project, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
       pages: getConfigurableTree(project, constants.PAGES_DIRECTORY),
       roles: getConfigurableTree(project, constants.ROLES_DIRECTORY),
       clients: getConfigurableTree(project, constants.CLIENTS_DIRECTORY),
@@ -151,6 +155,9 @@ const getTree = (project, changesetId) =>
         result.rules,
         result.databases,
         result.emails,
+        result.guardianFactors,
+        result.guardianFactorTemplates,
+        result.guardianFactorProviders,
         result.pages,
         result.roles,
         result.clients,
@@ -373,6 +380,9 @@ export const getChanges = ({ project, changesetId }) =>
         databases: getDatabaseData(changesetId, files),
         emailProvider: getEmailProvider(changesetId, files),
         emailTemplates: getHtmlTemplates(changesetId, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+        guardianFactors: getConfigurables(changesetId, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+        guardianFactorTemplates: getConfigurables(changesetId, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+        guardianFactorProviders: getConfigurables(changesetId, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
         pages: getHtmlTemplates(changesetId, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
         roles: getConfigurables(changesetId, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(changesetId, files, constants.CLIENTS_DIRECTORY),
