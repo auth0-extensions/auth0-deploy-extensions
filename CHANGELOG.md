@@ -5,12 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.4.3] - Unreleased
+## [1.5.0] - Unreleased
 
-### auth0-bitbucket-deploy v2.9.2
-### auth0-github-deploy v2.9.1
-### auth0-gitlab-deploy v2.10.3
-### auth0-visualstudio-deploy v2.8.3
+### auth0-bitbucket-deploy v2.10.0
+### auth0-github-deploy v2.10.0
+### auth0-gitlab-deploy v2.11.0
+### auth0-visualstudio-deploy v2.9.0
 
 - #### Added
   - Tenant settings support (`tenant.json` file).

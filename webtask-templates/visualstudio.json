@@ -1,8 +1,8 @@
 {
   "title": "Visual Studio Team Services Deployments",
   "name": "auth0-visualstudio-deploy",
-  "version": "2.8.3",
-  "preVersion": "2.7.1",
+  "version": "2.9.0",
+  "preVersion": "2.8.2",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Hosted Pages, Rules and Custom Database Connections from Visual Studio Team Services.",
   "type": "application",
