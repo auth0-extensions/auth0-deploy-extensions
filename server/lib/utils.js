@@ -37,10 +37,29 @@ const isTemplate = (file, dir, allowedNames) =>
   file.indexOf(`${path.join(getPrefix(), dir)}/`) === 0 && allowedNames.indexOf(file.split('/').pop()) >= 0;
 
 /*
- * Check if a file is part of the pages folder.
+ * Check if a file is the tenant settings file.
+ */
+const isTenantFile = (file) =>
+  file === path.join(getPrefix(), 'tenant.json');
+
+/*
+ * Check if a file is the email provider file.
  */
 const isEmailProvider = (file) =>
   file === path.join(getPrefix(), constants.EMAIL_TEMPLATES_DIRECTORY, 'provider.json');
+
+/*
+ * Check if a file is the guardian file.
+ */
+const isGuardianFile = (file) => {
+  const guardianDir = path.join(getPrefix(), constants.GUARDIAN_DIRECTORY);
+  const isJSON = file.endsWith('.json');
+  const isGuardian = file.startsWith(path.join(guardianDir, constants.GUARDIAN_FACTORS_DIRECTORY))
+    || file.startsWith(path.join(guardianDir, constants.GUARDIAN_PROVIDERS_DIRECTORY))
+    || file.startsWith(path.join(guardianDir, constants.GUARDIAN_TEMPLATES_DIRECTORY));
+
+  return isJSON && isGuardian;
+}
 
 /*
  * Check if a file is part of configurable folder.
@@ -95,7 +114,11 @@ const validFilesOnly = (fileName) => {
     return true;
   } else if (isTemplate(fileName, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES)) {
     return true;
+  } else if (isTenantFile(fileName)) {
+    return true;
   } else if (isEmailProvider(fileName)) {
+    return true;
+  } else if (isGuardianFile(fileName)) {
     return true;
   } else if (isRule(fileName)) {
     return /\.(js|json)$/i.test(fileName);
@@ -234,6 +257,14 @@ const extractFileContent = (item) => {
   return item || {};
 };
 
+const checkSessionLifetime = (data, property) => {
+  const hours = data[property];
+  if (hours !== undefined && !Number.isInteger(hours)) {
+    data[`${property}_in_minutes`] = Math.round(hours * 60);
+    delete data[property];
+  }
+};
+
 const unifyItem = (item, type) => {
   switch (type) {
     default:
@@ -258,8 +289,19 @@ const unifyItem = (item, type) => {
     }
     case 'roles':
     case 'clientGrants':
+    case 'guardianFactors':
+    case 'guardianFactorTemplates':
+    case 'guardianFactorProviders':
     case 'emailProvider': {
       const data = extractFileContent(item.configFile);
+
+      return ({ ...data });
+    }
+
+    case 'tenant': {
+      const data = extractFileContent(item.configFile);
+      checkSessionLifetime(data, 'session_lifetime');
+      checkSessionLifetime(data, 'idle_session_lifetime');
 
       return ({ ...data });
     }
@@ -367,6 +409,8 @@ module.exports = {
   isRule,
   isDatabaseConnection,
   isTemplate,
+  isTenantFile,
+  isGuardianFile,
   isEmailProvider,
   isConfigurable,
   getDatabaseFiles,

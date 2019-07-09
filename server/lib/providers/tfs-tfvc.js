@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import path from 'path';
 import axios from 'axios';
 import Promise from 'bluebird';
 import { constants } from 'auth0-source-control-extension-tools';
@@ -50,8 +51,9 @@ export const hasChanges = (changesetId) =>
 const getConfigurableTree = (project, directory) =>
   new Promise((resolve, reject) => {
     try {
+      const dir = directory ? `/${directory}` : '';
       getApi()
-        .then(api => api.getItems(project, `${utils.getPrefix()}/${directory}`))
+        .then(api => api.getItems(project, `${utils.getPrefix()}${dir}`))
         .then(data => {
           if (!data) {
             return resolve([]);
@@ -131,9 +133,13 @@ const getTree = (project, changesetId) =>
   new Promise((resolve, reject) => {
     // Getting separate trees for rules and connections, as tfsvc does not provide full (recursive) tree
     const promises = {
+      tenant: getConfigurableTree(project, ''),
       rules: getConfigurableTree(project, constants.RULES_DIRECTORY),
       databases: getConnectionsTree(project, changesetId),
       emails: getConfigurableTree(project, constants.EMAIL_TEMPLATES_DIRECTORY),
+      guardianFactors: getConfigurableTree(project, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+      guardianFactorTemplates: getConfigurableTree(project, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+      guardianFactorProviders: getConfigurableTree(project, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
       pages: getConfigurableTree(project, constants.PAGES_DIRECTORY),
       roles: getConfigurableTree(project, constants.ROLES_DIRECTORY),
       clients: getConfigurableTree(project, constants.CLIENTS_DIRECTORY),
@@ -145,9 +151,13 @@ const getTree = (project, changesetId) =>
 
     return Promise.props(promises)
       .then(result => resolve(_.union(
+        result.tenant,
         result.rules,
         result.databases,
         result.emails,
+        result.guardianFactors,
+        result.guardianFactorTemplates,
+        result.guardianFactorProviders,
         result.pages,
         result.roles,
         result.clients,
@@ -342,6 +352,12 @@ const getHtmlTemplates = (changesetId, files, dir, allowedNames) => {
 };
 
 /*
+ * Get tenant settings.
+ */
+const getTenant = (changesetId, files) =>
+  downloadConfigurable(changesetId, 'tenant', { configFile: _.find(files, f => utils.isTenantFile(f.path)) });
+
+/*
  * Get email provider.
  */
 const getEmailProvider = (changesetId, files) =>
@@ -359,10 +375,14 @@ export const getChanges = ({ project, changesetId }) =>
       })), null, 2)}`);
 
       const promises = {
+        tenant: getTenant(changesetId, files),
         rules: getRules(changesetId, files),
         databases: getDatabaseData(changesetId, files),
         emailProvider: getEmailProvider(changesetId, files),
         emailTemplates: getHtmlTemplates(changesetId, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+        guardianFactors: getConfigurables(changesetId, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+        guardianFactorTemplates: getConfigurables(changesetId, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+        guardianFactorProviders: getConfigurables(changesetId, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
         pages: getHtmlTemplates(changesetId, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
         roles: getConfigurables(changesetId, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(changesetId, files, constants.CLIENTS_DIRECTORY),

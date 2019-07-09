@@ -111,5 +111,40 @@ module.exports = {
         }
       ]
     }
-  ]
+  ],
+  guardianFactors: [
+    {
+      name: 'sms',
+      enabled: true
+    },
+    {
+      name: 'email',
+      enabled: false
+    }
+  ],
+  guardianFactorProviders: [
+    {
+      name: 'sms',
+      provider: 'twilio',
+      auth_token: 'test_twilio_authtoken',
+      sid: 'test_twilio_sid',
+      from: '0800-TEST-NUMBER',
+      messaging_service_sid: 'test_copilot_sid'
+    }
+  ],
+  guardianFactorTemplates: [
+    {
+      name: 'sms',
+      enrollment_message: 'test enroll {{ code }}',
+      verification_message: 'test verification {{ code }}'
+    }
+  ],
+  tenant: {
+    friendly_name: 'My Company',
+    support_email: 'support@company.com',
+    session_lifetime_in_minutes: 74,
+    default_directory: 'users',
+    sandbox_version: '4',
+    idle_session_lifetime: 72
+  }
 };

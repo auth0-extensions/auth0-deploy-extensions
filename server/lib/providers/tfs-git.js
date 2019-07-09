@@ -286,6 +286,12 @@ const getHtmlTemplates = (repositoryId, branch, files, dir, allowedNames) => {
 };
 
 /*
+ * Get tenant settings.
+ */
+const getTenant = (projectId, branch, files) =>
+  downloadConfigurable(projectId, branch, 'tenant', { configFile: _.find(files, f => utils.isTenantFile(f.path)) });
+
+/*
  * Get email provider.
  */
 const getEmailProvider = (projectId, branch, files) =>
@@ -304,10 +310,14 @@ export const getChanges = ({ repositoryId, branch }) =>
       })), null, 2)}`);
 
       const promises = {
+        tenant: getTenant(repositoryId, branch, files),
         rules: getRules(repositoryId, branch, files),
         databases: getDatabaseData(repositoryId, branch, files),
         emailProvider: getEmailProvider(repositoryId, branch, files),
         emailTemplates: getHtmlTemplates(repositoryId, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+        guardianFactors: getConfigurables(repositoryId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+        guardianFactorTemplates: getConfigurables(repositoryId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+        guardianFactorProviders: getConfigurables(repositoryId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
         pages: getHtmlTemplates(repositoryId, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
         roles: getConfigurables(repositoryId, branch, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(repositoryId, branch, files, constants.CLIENTS_DIRECTORY),

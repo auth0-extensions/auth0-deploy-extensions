@@ -22,20 +22,37 @@ const generateTree = () => {
     const items = Object.keys(files[type]);
     const tree = [];
 
-    for (let j = 0; j < items.length; j++) {
-      const name = items[j];
+    if (type === 'tenant.json') {
+      const content = JSON.stringify(files[type]);
+      const path = `tenant/${type}`;
 
-      const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-      const path = (type === 'database-connections')
-        ? `tenant/${type}/test-db/${name}`
-        : `tenant/${type}/${name}`;
+      tree.push({ type: 'blob', path, name: 'tenant.json' });
 
-      tree.push({ type: 'blob', path, name });
+      nock('https://api.bitbucket.org')
+        .get('/2.0/repositories/test/auth0/src/sha/tenant/')
+        .query(() => true)
+        .reply(200, { values: tree });
 
       nock('https://api.bitbucket.org')
         .get(`/2.0/repositories/test/auth0/src/sha/${path}`)
         .query(() => true)
         .reply(200, content);
+    } else {
+      for (let j = 0; j < items.length; j++) {
+        const name = items[j];
+
+        const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
+        const path = (type === 'database-connections')
+          ? `tenant/${type}/test-db/${name}`
+          : `tenant/${type}/${name}`;
+
+        tree.push({ type: 'blob', path, name });
+
+        nock('https://api.bitbucket.org')
+          .get(`/2.0/repositories/test/auth0/src/sha/${path}`)
+          .query(() => true)
+          .reply(200, content);
+      }
     }
 
     if (type === 'database-connections') {

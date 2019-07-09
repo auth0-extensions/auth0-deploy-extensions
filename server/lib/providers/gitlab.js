@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import path from 'path';
 import Promise from 'bluebird';
 import GitLabApi from 'gitlab';
 import { constants } from 'auth0-source-control-extension-tools';
@@ -56,7 +57,8 @@ const getTreeByPath = (projectId, branch, directory) =>
       .filter(f => utils.validFilesOnly(f.path));
 
     files.forEach((elem, idx) => {
-      files[idx].path = `${utils.getBaseDir()}${directory}/${elem.name}`;
+      const dir = directory ? `${directory}/` : '';
+      files[idx].path = `${utils.getBaseDir()}${dir}${elem.name}`;
     });
     return files;
   });
@@ -115,9 +117,13 @@ const getDBConnectionsTree = (projectId, branch) =>
 const getTree = (projectId, branch) => {
   // Getting separate trees for rules and connections, as GitLab does not provide full (recursive) tree
   const promises = {
+    tenant: getTreeByPath(projectId, branch, ''),
     rules: getTreeByPath(projectId, branch, constants.RULES_DIRECTORY),
     databases: getDBConnectionsTree(projectId, branch),
     emails: getTreeByPath(projectId, branch, constants.EMAIL_TEMPLATES_DIRECTORY),
+    guardianFactors: getTreeByPath(projectId, branch, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+    guardianFactorTemplates: getTreeByPath(projectId, branch, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+    guardianFactorProviders: getTreeByPath(projectId, branch, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
     pages: getTreeByPath(projectId, branch, constants.PAGES_DIRECTORY),
     roles: getTreeByPath(projectId, branch, constants.ROLES_DIRECTORY),
     clients: getTreeByPath(projectId, branch, constants.CLIENTS_DIRECTORY),
@@ -129,9 +135,13 @@ const getTree = (projectId, branch) => {
 
   return Promise.props(promises)
     .then((result) => (_.union(
+      result.tenant,
       result.rules,
       result.databases,
       result.emails,
+      result.guardianFactors,
+      result.guardianFactorTemplates,
+      result.guardianFactorProviders,
       result.pages,
       result.roles,
       result.clients,
@@ -314,6 +324,12 @@ const getHtmlTemplates = (projectId, branch, files, dir, allowedNames) => {
 };
 
 /*
+ * Get tenant settings.
+ */
+const getTenant = (projectId, branch, files) =>
+  downloadConfigurable(projectId, branch, 'tenant', { configFile: _.find(files, f => utils.isTenantFile(f.path)) });
+
+/*
  * Get email provider.
  */
 const getEmailProvider = (projectId, branch, files) =>
@@ -328,10 +344,14 @@ export const getChanges = ({ projectId, branch }) =>
       logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({ name: file.path, id: file.id })), null, 2)}`);
 
       const promises = {
+        tenant: getTenant(projectId, branch, files),
         rules: getRules(projectId, branch, files),
         databases: getDatabaseData(projectId, branch, files),
         emailProvider: getEmailProvider(projectId, branch, files),
         emailTemplates: getHtmlTemplates(projectId, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+        guardianFactors: getConfigurables(projectId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+        guardianFactorTemplates: getConfigurables(projectId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+        guardianFactorProviders: getConfigurables(projectId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
         pages: getHtmlTemplates(projectId, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
         roles: getConfigurables(projectId, branch, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(projectId, branch, files, constants.CLIENTS_DIRECTORY),

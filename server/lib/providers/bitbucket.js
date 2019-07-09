@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import path from 'path';
 import Promise from 'bluebird';
 import { constants } from 'auth0-source-control-extension-tools';
 
@@ -104,10 +105,14 @@ const getTree = (parsedRepo, branch, sha) => {
   };
   const promises = {
     databases: getDBConnectionsTree(params),
+    tenant: getTreeByDir(params, ''),
     rules: getTreeByDir(params, constants.RULES_DIRECTORY),
     pages: getTreeByDir(params, constants.PAGES_DIRECTORY),
     roles: getTreeByDir(params, constants.ROLES_DIRECTORY),
     emails: getTreeByDir(params, constants.EMAIL_TEMPLATES_DIRECTORY),
+    guardianFactors: getTreeByDir(params, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+    guardianFactorTemplates: getTreeByDir(params, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+    guardianFactorProviders: getTreeByDir(params, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
     clientGrants: getTreeByDir(params, constants.CLIENTS_GRANTS_DIRECTORY),
     connections: getTreeByDir(params, constants.CONNECTIONS_DIRECTORY),
     clients: getTreeByDir(params, constants.CLIENTS_DIRECTORY),
@@ -118,7 +123,11 @@ const getTree = (parsedRepo, branch, sha) => {
     .then((result) => (_.union(
       result.rules,
       result.databases,
+      result.tenant,
       result.emails,
+      result.guardianFactors,
+      result.guardianFactorTemplates,
+      result.guardianFactorProviders,
       result.pages,
       result.roles,
       result.clients,
@@ -220,6 +229,14 @@ const getRules = (parsedRepo, branch, files, shaToken) => {
   // Download all rules.
   return Promise.map(Object.keys(rules), (ruleName) =>
     downloadRule(parsedRepo, branch, ruleName, rules[ruleName], shaToken), { concurrency: 2 });
+};
+
+/*
+ * Try to download tenant settings.
+ */
+const getTenant = (parsedRepo, branch, files, shaToken) => {
+  const tenantFile = { configFile: _.find(files, f => utils.isTenantFile(f.path)) };
+  return downloadConfigurable(parsedRepo, branch, 'tenant', tenantFile, shaToken);
 };
 
 /*
@@ -332,10 +349,14 @@ export function getChanges({ repository, branch, sha }) {
         })), null, 2)}`);
 
         const promises = {
+          tenant: getTenant(parsedRepo, branch, files, sha),
           rules: getRules(parsedRepo, branch, files, sha),
           databases: getDatabaseData(parsedRepo, branch, files, sha),
           emailProvider: getEmailProvider(parsedRepo, branch, files, sha),
           emailTemplates: getHtmlTemplates(parsedRepo, branch, files, sha, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+          guardianFactors: getConfigurables(parsedRepo, branch, files, sha, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+          guardianFactorTemplates: getConfigurables(parsedRepo, branch, files, sha, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+          guardianFactorProviders: getConfigurables(parsedRepo, branch, files, sha, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
           pages: getHtmlTemplates(parsedRepo, branch, files, sha, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
           roles: getConfigurables(parsedRepo, branch, files, sha, constants.ROLES_DIRECTORY),
           clients: getConfigurables(parsedRepo, branch, files, sha, constants.CLIENTS_DIRECTORY),

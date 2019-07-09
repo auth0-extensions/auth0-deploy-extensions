@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.5.0] - 2019-07-09
+
+### auth0-bitbucket-deploy v2.10.0
+### auth0-github-deploy v2.10.0
+### auth0-gitlab-deploy v2.11.0
+### auth0-visualstudio-deploy v2.9.0
+
+- #### Added
+  - Tenant settings support (`tenant.json` file).
+  - Guardian settings support (`guardian/factors/*.json`, `guardian/providers/*.json`, `guardian/templates/*.json` files).
+  
 ## [1.4.2] - 2019-06-14
 
 ### auth0-gitlab-deploy v2.10.2
