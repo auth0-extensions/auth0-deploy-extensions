@@ -5,7 +5,7 @@ import { config } from './config';
 import { deployments } from './deployments';
 import { rules } from './rules';
 import { resourceServers } from './resourceServers';
-import { cipher } from './cipher';
+import { mappings } from './mappings';
 
 export default combineReducers({
   auth,
@@ -13,5 +13,5 @@ export default combineReducers({
   deployments,
   rules,
   resourceServers,
-  cipher
+  mappings
 });

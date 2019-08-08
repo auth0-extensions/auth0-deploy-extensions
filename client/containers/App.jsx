@@ -5,37 +5,9 @@ import { logout } from '../actions/auth';
 import Header from '../components/Header';
 
 import RequireAuthentication from './RequireAuthentication';
-import { ConfigContainer, DeploymentsContainer, RulesContainer, ResourceServersContainer, CipherContainer } from './';
+import { ConfigContainer, DeploymentsContainer, RulesContainer, ResourceServersContainer, MappingsContainer } from './';
 
 class App extends Component {
-  renderCipherTab(activeTab) {
-    if (window.config.ENABLE_CIPHER) {
-      return (
-        <li className={activeTab === 'cipher' ? 'active' : ''}>
-          <a data-toggle="tab" href="#cipher">
-            <span className="tab-title">
-              Secrets Encryption Tool
-            </span>
-          </a>
-        </li>
-      );
-    }
-
-    return '';
-  }
-
-  renderCipherContainer(activeTab) {
-    if (window.config.ENABLE_CIPHER) {
-      return (
-        <div id="cipher" className={activeTab === 'cipher' ? 'tab-pane active' : 'tab-pane'}>
-          <CipherContainer />
-        </div>
-      );
-    }
-
-    return '';
-  }
-
   render() {
     const activeTab = this.props.activeTab;
     return (
@@ -87,7 +59,13 @@ class App extends Component {
                         </span>
                       </a>
                     </li>
-                    {this.renderCipherTab(activeTab)}
+                    <li className={activeTab === 'mappings' ? 'active' : ''}>
+                      <a data-toggle="tab" href="#mappings">
+                        <span className="tab-title">
+                          Mappings
+                        </span>
+                      </a>
+                    </li>
                   </ul>
                 </div>
                 <div id="content-area" className="tab-content">
@@ -103,7 +81,9 @@ class App extends Component {
                   <div id="resourceServers" className={activeTab === 'resourceServers' ? 'tab-pane active' : 'tab-pane'}>
                     <ResourceServersContainer />
                   </div>
-                  {this.renderCipherContainer(activeTab)}
+                  <div id="mappings" className={activeTab === 'mappings' ? 'tab-pane active' : 'tab-pane'}>
+                    <MappingsContainer />
+                  </div>
                 </div>
               </div>
             </section>

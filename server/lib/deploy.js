@@ -19,7 +19,7 @@ export default (storage, client, options) => {
 
   return storage.getData()
     .then(({ exclude, mappings }) => {
-      getChanges({ ...options, mappings })
+      return getChanges({ ...options, mappings })
         .then(assets => {
           assets.exclude = exclude;
           repo.assets = assets;

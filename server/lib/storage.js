@@ -13,8 +13,8 @@ export default class Storage {
   }
 }
 
-Storage.prototype.saveReport = (report) =>
-  this.storage.read()
+Storage.prototype.saveReport = function(report) {
+  return this.storage.read()
     .then((data) => {
       const maxLogs = 20;
 
@@ -27,13 +27,15 @@ Storage.prototype.saveReport = (report) =>
 
       return this.storage.write(data).then(() => report);
     });
+};
 
-Storage.prototype.getReports = () =>
-  this.storage.read()
+Storage.prototype.getReports = function() {
+  return this.storage.read()
     .then(data => _.orderBy(data.deployments || [], [ 'date' ], [ 'desc' ]));
+};
 
-Storage.prototype.getData = (raw) =>
-  this.storage.read()
+Storage.prototype.getData = function(raw) {
+  return this.storage.read()
     .then((data) => {
       const { exclude, mappings } = data;
 
@@ -44,9 +46,10 @@ Storage.prototype.getData = (raw) =>
 
       return { exclude, mappings };
     });
+};
 
-Storage.prototype.saveMappings = (mappings) =>
-  this.storage.read()
+Storage.prototype.saveMappings = function(mappings) {
+  return this.storage.read()
     .then((data) => {
       if (this.cipher) {
         return this.cipher.encrypt(JSON.stringify(mappings))
@@ -55,24 +58,28 @@ Storage.prototype.saveMappings = (mappings) =>
 
       return this.storage.write({ ...data, mappings });
     });
+};
 
-Storage.prototype.saveExclude = (excludes, type) =>
-  this.storage.read()
+Storage.prototype.saveExclude = function(excludes, type) {
+  return this.storage.read()
     .then(data => {
       data.exclude = data.exclude || {};
       data.exclude[type] = excludes;
       return data;
     })
     .then(data => this.storage.write(data));
+};
 
-Storage.prototype.getNotified = () =>
-  this.storage.read()
+Storage.prototype.getNotified = function() {
+  return this.storage.read()
     .then(data => data.isNotified);
+};
 
-Storage.prototype.setNotified = () =>
-  this.storage.read()
+Storage.prototype.setNotified = function() {
+  return this.storage.read()
     .then(data => {
       data.isNotified = true;
       return data;
     })
     .then(data => this.storage.write(data));
+};

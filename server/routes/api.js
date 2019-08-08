@@ -2,8 +2,7 @@ import express from 'express';
 import { middlewares } from 'auth0-extension-express-tools';
 
 import excluded from './excluded';
-import rules from './rules';
-import resourceServers from './resourceServers';
+import mappings from './mappings';
 import deploy from '../lib/deploy';
 import config from '../lib/config';
 
@@ -28,6 +27,8 @@ export default (storage) => {
 
   api.use('/rules', excluded(storage, 'rules'));
   api.use('/resourceServers', excluded(storage, 'resourceServers'));
+
+  api.use('/mappings', mappings(storage));
 
   api.post('/notified', (req, res, next) => {
     storage.setNotified()
