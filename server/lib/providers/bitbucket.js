@@ -339,7 +339,7 @@ const getHtmlTemplates = (parsedRepo, branch, files, shaToken, dir, allowedNames
 /*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
-export function getChanges({ repository, branch, sha }) {
+export function getChanges({ repository, branch, sha, mappings }) {
   return checkRepo(repository)
     .then((parsedRepo) => getTree(parsedRepo, branch, sha)
       .then(files => {
@@ -367,7 +367,7 @@ export function getChanges({ repository, branch, sha }) {
         };
 
         return Promise.props(promises)
-          .then(result => utils.unifyData(result));
+          .then(result => utils.unifyData(result, mappings));
       }));
 }
 

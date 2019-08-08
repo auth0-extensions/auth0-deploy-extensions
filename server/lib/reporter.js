@@ -2,7 +2,6 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 
 import config from './config';
-import saveToStorage from './storage';
 import sendToSlack from './slack';
 import sendToHook from './hook';
 
@@ -33,5 +32,5 @@ export default function(storage, info) {
         report.warnings.push({ title: `Error sending report to ${config('REPORT_WEBHOOK')}`, message: err });
         return Promise.resolve();
       })
-  ]).then(() => saveToStorage(storage, report));
+  ]).then(() => storage.saveReport(report));
 }

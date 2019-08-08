@@ -279,7 +279,7 @@ const getConfigurables = (repository, branch, files, directory) => {
 /*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
-export const getChanges = ({ repository, branch, sha }) =>
+export const getChanges = ({ repository, branch, sha, mappings }) =>
   getTree(repository, branch, sha)
     .then(files => {
       logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
@@ -306,7 +306,7 @@ export const getChanges = ({ repository, branch, sha }) =>
       };
 
       return Promise.props(promises)
-        .then((result) => utils.unifyData(result));
+        .then((result) => utils.unifyData(result, mappings));
     });
 
 export const getOptions = utils.getOptions;

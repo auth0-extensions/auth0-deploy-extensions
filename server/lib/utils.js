@@ -2,9 +2,8 @@ import _ from 'lodash';
 import path from 'path';
 import Promise from 'bluebird';
 import { ArgumentError } from 'auth0-extension-tools';
-import { constants } from 'auth0-source-control-extension-tools';
+import { keywordReplace, constants } from 'auth0-source-control-extension-tools';
 
-import Cipher from './cipher';
 import config from './config';
 import logger from './logger';
 
@@ -265,6 +264,14 @@ const checkSessionLifetime = (data, property) => {
   }
 };
 
+const applyMappings = (item, mappings) => {
+  const originalType = typeof item;
+  const stringItem = originalType === 'object' ? JSON.stringify(item) : item;
+  const result = keywordReplace(stringItem, mappings);
+
+  return originalType === 'object' ? JSON.parse(result) : result;
+};
+
 const unifyItem = (item, type) => {
   switch (type) {
     default:
@@ -338,18 +345,18 @@ const unifyItem = (item, type) => {
   }
 };
 
-const unifyData = (assets) => {
+const unifyData = (assets, mappings) => {
   const result = {};
 
   _.forEach(assets, (data, type) => {
     result[type] = [];
     if (Array.isArray(data)) {
       _.forEach(data, (item) => {
-        const unified = unifyItem(item, type);
+        const unified = unifyItem(applyMappings(item, mappings), type);
         if (unified) result[type].push(unified);
       });
     } else {
-      result[type] = unifyItem(data, type);
+      result[type] = unifyItem(applyMappings(data, mappings), type);
     }
   });
 
@@ -359,12 +366,6 @@ const unifyData = (assets) => {
       delete result[name];
     }
   });
-
-  if (config('ENABLE_CIPHER') === true || config('ENABLE_CIPHER') === 'true') {
-    const cipher = new Cipher(config('CIPHER_PASSWORD'));
-    return cipher.processData(result)
-      .then(() => result);
-  }
 
   return Promise.resolve(result);
 };
