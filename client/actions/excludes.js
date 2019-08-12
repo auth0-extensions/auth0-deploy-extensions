@@ -4,24 +4,24 @@ import * as constants from '../constants';
 /*
  * Load the rules.
  */
-export function fetchAllRules() {
+export function fetchExcludes() {
   return {
-    type: constants.FETCH_RULES,
+    type: constants.FETCH_EXCLUDES,
     payload: {
-      promise: axios.get('/api/rules', {
+      promise: axios.get('/api/excludes', {
         responseType: 'json'
       })
     }
   };
 }
 
-export function updateRules(data) {
+export function updateExcludes(data) {
   return {
-    type: constants.UPDATE_MANUAL_RULES,
+    type: constants.UPDATE_EXCLUDES,
     payload: {
       promise: axios({
         method: 'post',
-        url: '/api/rules',
+        url: '/api/excludes',
         data,
         responseType: 'json'
       })
@@ -31,11 +31,12 @@ export function updateRules(data) {
 
 export function openNotification() {
   return {
-    type: constants.OPEN_RULE_NOTIFICATION
+    type: constants.OPEN_EXCLUDES_NOTIFICATION
   };
 }
+
 export function closeNotification() {
   return {
-    type: constants.CLOSE_RULE_NOTIFICATION
+    type: constants.CLOSE_EXCLUDES_NOTIFICATION
   };
 }

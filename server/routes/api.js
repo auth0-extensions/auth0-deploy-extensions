@@ -1,7 +1,7 @@
 import express from 'express';
 import { middlewares } from 'auth0-extension-express-tools';
 
-import excluded from './excluded';
+import excludes from './excludes';
 import mappings from './mappings';
 import deploy from '../lib/deploy';
 import config from '../lib/config';
@@ -25,8 +25,7 @@ export default (storage) => {
     clientSecret: config('AUTH0_CLIENT_SECRET')
   }));
 
-  api.use('/rules', excluded(storage, 'rules'));
-  api.use('/resourceServers', excluded(storage, 'resourceServers'));
+  api.use('/excludes', excludes(storage));
 
   api.use('/mappings', mappings(storage));
 

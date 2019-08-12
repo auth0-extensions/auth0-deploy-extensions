@@ -1,15 +1,8 @@
 import _ from 'lodash';
-import config from './config';
-import Cipher from './cipher';
 
 export default class Storage {
   constructor(storageContext) {
     this.storage = storageContext;
-    this.cipher = null;
-
-    if (config('ENABLE_CIPHER') === true || config('ENABLE_CIPHER') === 'true') {
-      this.cipher = new Cipher(config('CIPHER_PASSWORD'));
-    }
   }
 }
 
@@ -25,6 +18,10 @@ Storage.prototype.saveReport = function(report) {
       data.deployments.push(report);
       data.deployments = data.deployments.splice(-maxLogs, maxLogs);
 
+      if (!report.error) {
+        data.lastSuccess = _.omit(report, [ 'error', 'warnings', 'logs' ]);
+      }
+
       return this.storage.write(data).then(() => report);
     });
 };
@@ -34,30 +31,13 @@ Storage.prototype.getReports = function() {
     .then(data => _.orderBy(data.deployments || [], [ 'date' ], [ 'desc' ]));
 };
 
-Storage.prototype.getData = function(raw) {
-  return this.storage.read()
-    .then((data) => {
-      const { exclude, mappings } = data;
-
-      if (this.cipher && !raw) {
-        return this.cipher.decrypt(mappings)
-          .then(decrypted => ({ exclude, mappings: JSON.parse(decrypted) }));
-      }
-
-      return { exclude, mappings };
-    });
+Storage.prototype.getData = function() {
+  return this.storage.read();
 };
 
 Storage.prototype.saveMappings = function(mappings) {
   return this.storage.read()
-    .then((data) => {
-      if (this.cipher) {
-        return this.cipher.encrypt(JSON.stringify(mappings))
-          .then(encrypted => this.storage.write({ ...data, mappings: encrypted }));
-      }
-
-      return this.storage.write({ ...data, mappings });
-    });
+    .then((data) => this.storage.write({ ...data, mappings }));
 };
 
 Storage.prototype.saveExclude = function(excludes, type) {

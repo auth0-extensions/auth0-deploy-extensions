@@ -2,14 +2,20 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { logout } from '../actions/auth';
+import { fetchExcludes } from '../actions/excludes';
 import Header from '../components/Header';
 
 import RequireAuthentication from './RequireAuthentication';
-import { ConfigContainer, DeploymentsContainer, RulesContainer, ResourceServersContainer, MappingsContainer } from './';
+import { ConfigContainer, DeploymentsContainer, ExcludesContainer, MappingsContainer } from './';
 
 class App extends Component {
+  componentWillMount() {
+    this.props.fetchExcludes();
+  }
+
   render() {
-    const activeTab = this.props.activeTab;
+    const { activeTab, excludes, loading, error } = this.props;
+
     return (
       <div>
         <Header tenant={window.config.AUTH0_DOMAIN} onLogout={this.props.logout} />
@@ -45,24 +51,45 @@ class App extends Component {
                         </span>
                       </a>
                     </li>
+                    <li className={activeTab === 'mappings' ? 'active' : ''}>
+                      <a data-toggle="tab" href="#mappings">
+                        <span className="tab-title">
+                          Mappings
+                        </span>
+                      </a>
+                    </li>
                     <li className={activeTab === 'rules' ? 'active' : ''}>
                       <a data-toggle="tab" href="#rules">
                         <span className="tab-title">
-                          Rules Configuration
+                          Rules
+                        </span>
+                      </a>
+                    </li>
+                    <li className={activeTab === 'clients' ? 'active' : ''}>
+                      <a data-toggle="tab" href="#clients">
+                        <span className="tab-title">
+                          Clients
+                        </span>
+                      </a>
+                    </li>
+                    <li className={activeTab === 'databases' ? 'active' : ''}>
+                      <a data-toggle="tab" href="#databases">
+                        <span className="tab-title">
+                          Databases
+                        </span>
+                      </a>
+                    </li>
+                    <li className={activeTab === 'connections' ? 'active' : ''}>
+                      <a data-toggle="tab" href="#connections">
+                        <span className="tab-title">
+                          Connections
                         </span>
                       </a>
                     </li>
                     <li className={activeTab === 'resourceServers' ? 'active' : ''}>
                       <a data-toggle="tab" href="#resourceServers">
                         <span className="tab-title">
-                          Resource Servers Configuration
-                        </span>
-                      </a>
-                    </li>
-                    <li className={activeTab === 'mappings' ? 'active' : ''}>
-                      <a data-toggle="tab" href="#mappings">
-                        <span className="tab-title">
-                          Mappings
+                          Resource Servers
                         </span>
                       </a>
                     </li>
@@ -75,14 +102,23 @@ class App extends Component {
                   <div id="deployments" className={activeTab === 'deployments' ? 'tab-pane active' : 'tab-pane'}>
                     <DeploymentsContainer />
                   </div>
-                  <div id="rules" className={activeTab === 'rules' ? 'tab-pane active' : 'tab-pane'}>
-                    <RulesContainer />
-                  </div>
-                  <div id="resourceServers" className={activeTab === 'resourceServers' ? 'tab-pane active' : 'tab-pane'}>
-                    <ResourceServersContainer />
-                  </div>
                   <div id="mappings" className={activeTab === 'mappings' ? 'tab-pane active' : 'tab-pane'}>
                     <MappingsContainer />
+                  </div>
+                  <div id="rules" className={activeTab === 'rules' ? 'tab-pane active' : 'tab-pane'}>
+                    <ExcludesContainer type="rules" excludes={excludes} error={error} loading={loading} />
+                  </div>
+                  <div id="clients" className={activeTab === 'clients' ? 'tab-pane active' : 'tab-pane'}>
+                    <ExcludesContainer type="clients" excludes={excludes} error={error} loading={loading} />
+                  </div>
+                  <div id="databases" className={activeTab === 'databases' ? 'tab-pane active' : 'tab-pane'}>
+                    <ExcludesContainer type="databases" excludes={excludes} error={error} loading={loading} />
+                  </div>
+                  <div id="connections" className={activeTab === 'connections' ? 'tab-pane active' : 'tab-pane'}>
+                    <ExcludesContainer type="connections" excludes={excludes} error={error} loading={loading} />
+                  </div>
+                  <div id="resourceServers" className={activeTab === 'resourceServers' ? 'tab-pane active' : 'tab-pane'}>
+                    <ExcludesContainer type="resourceServers" excludes={excludes} error={error} loading={loading} />
                   </div>
                 </div>
               </div>
@@ -98,8 +134,11 @@ function select(state) {
   return {
     user: state.auth.get('user'),
     issuer: state.auth.get('issuer'),
-    activeTab: state.config.get('activeTab')
+    activeTab: state.config.get('activeTab'),
+    excludes: state.excludes.get('records'),
+    loading: state.excludes.get('loading'),
+    error: state.excludes.get('error')
   };
 }
 
-export default RequireAuthentication(connect(select, { logout })(App));
+export default RequireAuthentication(connect(select, { logout, fetchExcludes })(App));
