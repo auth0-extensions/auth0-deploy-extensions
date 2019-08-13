@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.0.0] - Unreleased
+
+### auth0-bitbucket-deploy v3.0.0
+### auth0-github-deploy v3.0.0
+### auth0-gitlab-deploy v3.0.0
+### auth0-visualstudio-deploy v3.0.0
+- #### Changed
+  - Cipher has been replaced with mapping
+- #### Added
+  - Ability to exclude `clients`, `databases` and `connections`
+  - Mappings support
+  - Ability to automatically re-deploy last successful configuration in case of failed deployment (`AUTO_REDEPLOY` option)
+  
 ## [1.5.0] - 2019-07-09
 
 ### auth0-bitbucket-deploy v2.10.0

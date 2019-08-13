@@ -56,29 +56,29 @@ module.exports = {
       configFile: '{ "string":"API Config" }'
     } ]
   },
-  encoded: {
+  mapped: {
     rules: [ {
       script: true,
       metadata: false,
       name: 'Rule',
-      scriptFile: 'Rule script with [!cipher]0af380a9782ab0765416e9521121146abe4b292560ae09ebb6efc108e2f31a1421b1d8be9b1a13-db22fc9248cb6709564b5ff76212ba2f8ccefeed791de678[rehpic!] text'
+      scriptFile: 'Rule script with ##MAP_ONE##'
     } ],
     databases: [ {
       name: 'Database',
       scripts: [ {
         name: 'login',
-        scriptFile: 'Database login script with some [!cipher]8ab12c0a32d38704bfead72c078fde104cf7cef9a3e030ff8d1df7e5c1389d170d4c158f9bcc-fe97e5f537d33c70763b6fa00f8b0e0386360ec06973d4fe[rehpic!]'
+        scriptFile: 'Database login script with ##MAP_TWO##'
       } ]
     } ],
     emailTemplates: [],
     pages: [],
-    clients: [],
+    clients: [ {
+      name: 'Client',
+      configFile: '{ "string":"Client Config", "array": @@ARR_MAP@@ }'
+    } ],
     clientGrants: [],
     connections: [],
-    rulesConfigs: [ {
-      name: 'RuleConfig',
-      configFile: '{ "value":"[!cipher]06ecaac4b16ba5d31687a445a58560284d1b2f38fa884581328f7676c06ef74fff792b61943596ca460613-8fc615e4d53fc3b2034b1b8877131c779d8245ca5491315e[rehpic!]" }'
-    } ],
+    rulesConfigs: [],
     resourceServers: []
   },
   dbSettings: {

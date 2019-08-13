@@ -36,38 +36,39 @@ export default (storage) => {
   });
 
   api.get('/config', (req, res, next) => {
-    storage.getNotified(isNotified => {
-      if (isNotified) {
-        return {
-          showNotification: false,
-          branch: config('BRANCH') || config('PROJECT_PATH'),
-          secret: config('EXTENSION_SECRET'),
-          repository: config('REPOSITORY'),
-          prefix: config('INSTANCE')
-        };
-      }
-
-      return req.auth0.rules.get()
-        .then(existingRules => {
-          const result = {
+    storage.getNotified()
+      .then(isNotified => {
+        if (isNotified) {
+          return {
             showNotification: false,
             branch: config('BRANCH') || config('PROJECT_PATH'),
             secret: config('EXTENSION_SECRET'),
             repository: config('REPOSITORY'),
             prefix: config('INSTANCE')
           };
+        }
 
-          if (existingRules && existingRules.length) {
-            result.showNotification = true;
-          } else {
-            storage.setNotified();
-          }
+        return req.auth0.rules.get()
+          .then(existingRules => {
+            const result = {
+              showNotification: false,
+              branch: config('BRANCH') || config('PROJECT_PATH'),
+              secret: config('EXTENSION_SECRET'),
+              repository: config('REPOSITORY'),
+              prefix: config('INSTANCE')
+            };
 
-          return result;
-        });
-    })
+            if (existingRules && existingRules.length) {
+              result.showNotification = true;
+            } else {
+              storage.setNotified();
+            }
+
+            return result;
+          });
+      })
     .then(data => res.json(data))
-    .catch(next);
+    .catch(err => next(err));
   });
 
   api.get('/deployments', (req, res, next) =>

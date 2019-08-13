@@ -36,9 +36,11 @@ export default (storage, client, options) => {
         .catch(err => report(storage, { repo, error: err.message })
           .then(() => {
             const reDeployEnabled = config('AUTO_REDEPLOY') === 'true' || config('AUTO_REDEPLOY') === true;
+            const isValidationError = err.message.startsWith('Schema validation failed');
 
-            if (repo.id !== 'manual' && reDeployEnabled) {
+            if (repo.id !== 'manual' && reDeployEnabled && !isValidationError) {
               const lastSuccessOptions = Object.assign({}, options, lastSuccess);
+
               return run(lastSuccessOptions, mappings, exclude)
                 .catch(redeployErr => report(storage, { repo, error: redeployErr.message })
                   .then(() => Promise.reject(redeployErr)));

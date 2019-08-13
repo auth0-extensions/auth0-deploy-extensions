@@ -3,18 +3,20 @@ import express from 'express';
 import Promise from 'bluebird';
 
 const getExcludes = (type, client, storage) => {
-  let query = {};
   const apiClient = type === 'databases' ? client.connections : client[type];
-
-  if (type === 'databases') {
-    query = { strategy: 'auth0' };
-  }
+  const query = {
+    rules: { fields: 'name' },
+    clients: { is_global: false, fields: 'name' },
+    databases: { strategy: 'auth0', fields: 'name' },
+    connections: { fields: 'name,strategy' },
+    resourceServers: { fields: 'name,is_system' }
+  };
 
   if (!apiClient || typeof apiClient.get !== 'function') {
     return Promise.reject(new Error(`Get excluded error: wrong type ${type}`));
   }
 
-  return apiClient.get(query)
+  return apiClient.get(query[type])
     .then(items =>
       storage.getData()
         .then(data => {
@@ -35,7 +37,7 @@ const getExcludes = (type, client, storage) => {
               result[item.name] = false;
             });
           }
-          if (query.strategy) console.log(result);
+
           return result;
         })
     );

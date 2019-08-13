@@ -3,6 +3,7 @@ import expect from 'expect';
 
 import config from '../../server/lib/config';
 import report from '../../server/lib/reporter';
+import Storage from '../../server/lib/storage';
 
 const defaultConfig = {
   WT_URL: 'https://wt.example.com',
@@ -10,16 +11,18 @@ const defaultConfig = {
   REPORT_WEBHOOK: 'https://hook.example.com'
 };
 
-const storage = {
+const storageContext = {
   data: {
     someData: true
   },
-  read: () => Promise.resolve(storage.data),
+  read: () => Promise.resolve(storageContext.data),
   write: (data) => {
-    storage.data = data;
+    storageContext.data = data;
     return Promise.resolve();
   }
 };
+
+const storage = new Storage(storageContext);
 
 const repo = {
   id: 'id',
@@ -126,7 +129,7 @@ describe('reporter', () => {
   });
 
   beforeEach((done) => {
-    storage.data = { someData: true };
+    storageContext.data = { someData: true };
     return done();
   });
 
@@ -149,7 +152,7 @@ describe('reporter', () => {
 
     report(storage, { repo, progress })
       .then(() => {
-        result.data = storage.data;
+        result.data = storageContext.data;
         checkData(result, false, done);
       });
   });
@@ -157,12 +160,12 @@ describe('reporter', () => {
   it('should add warnings if unable to send data to the hooks', (done) => {
     report(storage, { repo, progress })
       .then(() => {
-        expect(storage.data.someData).toEqual(true);
-        expect(storage.data.deployments).toBeAn('array');
-        expect(storage.data.deployments.length).toEqual(1);
-        expect(storage.data.deployments[0].warnings.length).toEqual(2);
-        expect(storage.data.deployments[0].warnings[0].title).toEqual('Error sending report to Slack');
-        expect(storage.data.deployments[0].warnings[1].title).toEqual('Error sending report to https://hook.example.com');
+        expect(storageContext.data.someData).toEqual(true);
+        expect(storageContext.data.deployments).toBeAn('array');
+        expect(storageContext.data.deployments.length).toEqual(1);
+        expect(storageContext.data.deployments[0].warnings.length).toEqual(2);
+        expect(storageContext.data.deployments[0].warnings[0].title).toEqual('Error sending report to Slack');
+        expect(storageContext.data.deployments[0].warnings[1].title).toEqual('Error sending report to https://hook.example.com');
 
         return done();
       });
@@ -187,25 +190,25 @@ describe('reporter', () => {
 
     report(storage, { repo, error: 'Testing error' })
       .then(() => {
-        result.data = storage.data;
+        result.data = storageContext.data;
         checkData(result, true, done);
       });
   });
 
   it('should keep only 20 records in the storage', (done) => {
-    storage.data.deployments = [];
+    storageContext.data.deployments = [];
 
     for (let i = 0; i < 30; i++) {
-      storage.data.deployments.push({ id: i });
+      storageContext.data.deployments.push({ id: i });
     }
 
     report(storage, { repo, error: 'Testing error' })
       .then(() => {
-        expect(storage.data.someData).toEqual(true);
-        expect(storage.data.deployments).toBeAn('array');
-        expect(storage.data.deployments.length).toEqual(20);
-        expect(storage.data.deployments[19].id).toEqual('id');
-        expect(storage.data.deployments[0].id).toEqual(11);
+        expect(storageContext.data.someData).toEqual(true);
+        expect(storageContext.data.deployments).toBeAn('array');
+        expect(storageContext.data.deployments.length).toEqual(20);
+        expect(storageContext.data.deployments[19].id).toEqual('id');
+        expect(storageContext.data.deployments[0].id).toEqual(11);
 
         return done();
       });
