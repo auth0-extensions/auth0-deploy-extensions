@@ -265,11 +265,16 @@ const checkSessionLifetime = (data, property) => {
 };
 
 const applyMappings = (item, mappings) => {
-  const originalType = typeof item;
-  const stringItem = originalType === 'object' ? JSON.stringify(item) : item;
-  const result = keywordReplace(stringItem, mappings);
+  const result = {};
+  Object.keys(item).forEach((key) => {
+    if (Array.isArray(item[key])) {
+      result[key] = JSON.parse(keywordReplace(JSON.stringify(item[key]), mappings));
+    } else {
+      result[key] = typeof item[key] !== 'string' ? item[key] : keywordReplace(item[key], mappings);
+    }
+  });
 
-  return originalType === 'object' ? JSON.parse(result) : result;
+  return result;
 };
 
 const unifyItem = (item, type) => {

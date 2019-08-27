@@ -68,7 +68,7 @@ describe('unifyData', () => {
   });
 
   it('should unify mapped assets', (done) => {
-    utils.unifyData(assets.mapped, { MAP_ONE: 'first', MAP_TWO: 'second', ARR_MAP: [ 1, 2 ] })
+    utils.unifyData(assets.mapped, { MAP_ONE: 'first', MAP_TWO: 'second', ARR_MAP: [ 1, 2 ], ONE: 1, TWO: 'two' })
       .then((unified) => {
         expect(unified.rules[0].script).toEqual('Rule script with first');
         expect(unified.rules[0].name).toEqual('Rule');
@@ -77,9 +77,13 @@ describe('unifyData', () => {
         expect(unified.databases[0].options.customScripts.login).toEqual('Database login script with second');
         expect(unified.databases[0].options.enabledDatabaseCustomization).toEqual(true);
 
-        expect(unified.clients[0].name).toEqual('Client');
-        expect(unified.clients[0].string).toEqual('Client Config');
+        expect(unified.clients[0].name).toEqual('ClientOne');
+        expect(unified.clients[0].string).toEqual('Client One Config');
         expect(unified.clients[0].array).toEqual([ 1, 2 ]);
+
+        expect(unified.clients[1].name).toEqual('ClientTwo');
+        expect(unified.clients[1].string).toEqual('Client Two Config');
+        expect(unified.clients[1].array).toEqual([ 1, 'two' ]);
 
         expect(unified.rulesConfigs).toNotExist();
         expect(unified.emailProvider).toNotExist();

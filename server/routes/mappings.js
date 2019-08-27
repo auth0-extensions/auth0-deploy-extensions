@@ -4,7 +4,7 @@ export default (storage) => {
   const api = express.Router(); // eslint-disable-line new-cap
   api.get('/', (req, res, next) =>
     storage.getData()
-      .then(data => res.json(data.mappings))
+      .then(data => res.json(data.mappings || {}))
       .catch(next));
 
   api.post('/', (req, res, next) => {

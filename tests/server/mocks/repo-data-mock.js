@@ -72,10 +72,16 @@ module.exports = {
     } ],
     emailTemplates: [],
     pages: [],
-    clients: [ {
-      name: 'Client',
-      configFile: '{ "string":"Client Config", "array": @@ARR_MAP@@ }'
-    } ],
+    clients: [
+      {
+        name: 'ClientOne',
+        configFile: '{ "string":"Client One Config", "array": @@ARR_MAP@@ }'
+      },
+      {
+        name: 'ClientTwo',
+        configFile: '{ "string":"Client Two Config", "array": [ ##ONE##, "##TWO##" ] }'
+      }
+    ],
     clientGrants: [],
     connections: [],
     rulesConfigs: [],
