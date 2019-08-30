@@ -338,7 +338,7 @@ const getEmailProvider = (projectId, branch, files) =>
 /*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
-export const getChanges = ({ projectId, branch }) =>
+export const getChanges = ({ projectId, branch, mappings }) =>
   getTree(projectId, branch)
     .then(files => {
       logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({ name: file.path, id: file.id })), null, 2)}`);
@@ -362,7 +362,7 @@ export const getChanges = ({ projectId, branch }) =>
       };
 
       return Promise.props(promises)
-        .then((result) => utils.unifyData(result));
+        .then((result) => utils.unifyData(result, mappings));
     });
 
 /*

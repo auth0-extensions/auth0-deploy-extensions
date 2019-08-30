@@ -67,24 +67,29 @@ describe('unifyData', () => {
       });
   });
 
-  it('should unify encoded assets', (done) => {
-    utils.unifyData(assets.encoded)
+  it('should unify mapped assets', (done) => {
+    utils.unifyData(assets.mapped, { MAP_ONE: 'first', MAP_TWO: 'second', ARR_MAP: [ 1, 2 ], ONE: 1, TWO: 'two' })
       .then((unified) => {
-        expect(unified.rules[0].script).toEqual('Rule script with encoded text');
+        expect(unified.rules[0].script).toEqual('Rule script with first');
         expect(unified.rules[0].name).toEqual('Rule');
 
         expect(unified.databases[0].name).toEqual('Database');
-        expect(unified.databases[0].options.customScripts.login).toEqual('Database login script with some secret');
+        expect(unified.databases[0].options.customScripts.login).toEqual('Database login script with second');
         expect(unified.databases[0].options.enabledDatabaseCustomization).toEqual(true);
 
-        expect(unified.rulesConfigs[0].key).toEqual('RuleConfig');
-        expect(unified.rulesConfigs[0].value).toEqual('rule-config');
+        expect(unified.clients[0].name).toEqual('ClientOne');
+        expect(unified.clients[0].string).toEqual('Client One Config');
+        expect(unified.clients[0].array).toEqual([ 1, 2 ]);
 
+        expect(unified.clients[1].name).toEqual('ClientTwo');
+        expect(unified.clients[1].string).toEqual('Client Two Config');
+        expect(unified.clients[1].array).toEqual([ 1, 'two' ]);
+
+        expect(unified.rulesConfigs).toNotExist();
         expect(unified.emailProvider).toNotExist();
         expect(unified.emailTemplates).toNotExist();
         expect(unified.pages).toNotExist();
         expect(unified.roles).toNotExist();
-        expect(unified.clients).toNotExist();
         expect(unified.clientGrants).toNotExist();
         expect(unified.connections).toNotExist();
         expect(unified.resourceServers).toNotExist();

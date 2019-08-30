@@ -2,39 +2,32 @@ import React, { PropTypes, Component } from 'react';
 import connectContainer from 'redux-static';
 import { Error, LoadingPanel } from 'auth0-extension-ui';
 
-import { ruleActions } from '../actions';
+import { excludesActions } from '../actions';
 
 import ConfigurationTable from '../components/ConfigurationTable';
 
 export default connectContainer(class extends Component {
   static stateToProps = (state) => ({
-    rules: state.rules.get('records'),
-    loading: state.rules.get('loading'),
-    error: state.rules.get('error'),
-    showNotification: state.rules.get('showNotification'),
-    notificationType: state.rules.get('notificationType')
+    showNotification: state.excludes.get('showNotification'),
+    notificationType: state.excludes.get('notificationType')
   });
 
   static actionsToProps = {
-    ...ruleActions
+    ...excludesActions
   }
 
   static propTypes = {
-    rules: PropTypes.object.isRequired,
+    type: PropTypes.string.isRequired,
+    excludes: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     error: PropTypes.object.isRequired,
-    fetchAllRules: PropTypes.func.isRequired,
-    updateRules: PropTypes.func.isRequired
-  }
-
-  componentWillMount() {
-    this.props.fetchAllRules();
+    updateExcludes: PropTypes.func.isRequired
   }
 
   render() {
-    const rules = this.props.rules;
-    const loading = this.props.loading;
-    const error = this.props.error;
+    const { type, loading, error, excludes } = this.props;
+    const items = excludes.get(type);
+
     return (
       <div>
         <LoadingPanel show={loading} animationStyle={{ paddingTop: '5px', paddingBottom: '5px' }}>
@@ -42,11 +35,11 @@ export default connectContainer(class extends Component {
             <div className="col-xs-12">
               <Error message={error} />
               <ConfigurationTable
-                type="Rules"
-                items={rules}
+                type={type}
+                items={items}
                 loading={loading}
                 error={error}
-                saveManualItems={this.props.updateRules}
+                saveManualItems={this.props.updateExcludes}
                 openNotification={this.props.openNotification}
                 closeNotification={this.props.closeNotification}
                 showNotification={this.props.showNotification}

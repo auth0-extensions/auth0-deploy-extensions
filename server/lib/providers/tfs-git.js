@@ -149,7 +149,7 @@ const downloadRule = (repositoryId, branch, ruleName, rule) => {
     downloads.push(downloadFile(repositoryId, branch, rule.metadataFile)
       .then(file => {
         currentRule.metadata = true;
-        currentRule.metadataFile = JSON.parse(file.contents);
+        currentRule.metadataFile = file.contents;
       }));
   }
 
@@ -171,7 +171,7 @@ const downloadConfigurable = (repositoryId, branch, name, item) => {
   if (item.configFile) {
     downloads.push(downloadFile(repositoryId, branch, item.configFile)
       .then(file => {
-        configurable.configFile = JSON.parse(file.contents);
+        configurable.configFile = file.contents;
       }));
   }
 
@@ -179,7 +179,7 @@ const downloadConfigurable = (repositoryId, branch, name, item) => {
     downloads.push(downloadFile(repositoryId, branch, item.metadataFile)
       .then(file => {
         configurable.metadata = true;
-        configurable.metadataFile = JSON.parse(file.contents);
+        configurable.metadataFile = file.contents;
       }));
   }
 
@@ -301,7 +301,7 @@ const getEmailProvider = (projectId, branch, files) =>
 /*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
-export const getChanges = ({ repositoryId, branch }) =>
+export const getChanges = ({ repositoryId, branch, mappings }) =>
   getTree(repositoryId, branch)
     .then(files => {
       logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
@@ -328,7 +328,7 @@ export const getChanges = ({ repositoryId, branch }) =>
       };
 
       return Promise.props(promises)
-        .then((result) => utils.unifyData(result));
+        .then((result) => utils.unifyData(result, mappings));
     });
 
 /*

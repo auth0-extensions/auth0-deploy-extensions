@@ -38,7 +38,7 @@ export default class ConfigurationTable extends Component {
       }
     });
 
-    this.props.saveManualItems({ names: manualItems })
+    this.props.saveManualItems({ type: this.props.type, names: manualItems })
       .then(() => {
         this.props.openNotification();
         setTimeout(this.props.closeNotification, 10000);
@@ -62,10 +62,10 @@ export default class ConfigurationTable extends Component {
           show={this.props.showNotification}
           onDismiss={this.props.closeNotification}
           type={this.props.notificationType}
-          message={`Manual ${this.props.type} have been saved.`}
+          message={`Excluded ${this.props.type} have been saved.`}
         />
         <p>
-          {`${this.props.type} that are flagged as manual will not be deleted, but any changes to metadata (order/status) will still be applied.`}
+          {`You can flag ${this.props.type} as excluded. Excluded ${this.props.type} will not be deleted, or updated.`}
         </p>
         <Table>
           <TableHeader>
@@ -88,7 +88,7 @@ export default class ConfigurationTable extends Component {
             ))}
           </TableBody>
         </Table>
-        <button className="btn btn-success pull-right" onClick={this.onChangeManual}>{`Update Manual ${this.props.type}`}</button>
+        <button className="btn btn-success pull-right" onClick={this.onChangeManual}>{`Update excluded ${this.props.type}`}</button>
       </div>
     );
   }

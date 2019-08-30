@@ -9,13 +9,16 @@ import { middlewares, routes } from 'auth0-extension-express-tools';
 import api from './routes';
 import logger from './lib/logger';
 import config from './lib/config';
+import Storage from './lib/storage';
 
 module.exports = (configProvider, storageProvider) => {
   config.setProvider(configProvider);
 
-  const storage = storageProvider
+  const storageContext = storageProvider
     ? new tools.WebtaskStorageContext(storageProvider, { force: 1 })
     : new tools.FileStorageContext(path.join(__dirname, './data.json'), { mergeWrites: true });
+
+  const storage = new Storage(storageContext);
 
   const app = new Express();
   app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {

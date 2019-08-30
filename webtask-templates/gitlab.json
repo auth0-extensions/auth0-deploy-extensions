@@ -1,8 +1,8 @@
 {
   "title": "GitLab Deployments",
   "name": "auth0-gitlab-deploy",
-  "version": "2.11.0",
-  "preVersion": "2.10.2",
+  "version": "3.0.0",
+  "preVersion": "2.11.0",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Hosted Pages, Rules and Custom Database Connections from GitLab.",
   "type": "application",
@@ -47,10 +47,9 @@
       "example": "settings/tenant",
       "description": "Path to your tenant settings directories"
     },
-    "ENABLE_CIPHER": {
-      "description": "Enables support of encrypted secrets",
+    "AUTO_REDEPLOY": {
+      "description": "Automatically re-deploy last successful configuration in case of failed deploy",
       "type": "select",
-      "required": true,
       "default": "false",
       "allowMultiple": false,
       "options": [
@@ -63,13 +62,6 @@
           "text": "Yes"
         }
       ]
-    },
-    "CIPHER_PASSWORD": {
-      "required": true,
-      "description": "Password for encode/decode secrets",
-      "visibleIf": {
-        "ENABLE_CIPHER": "true"
-      }
     },
     "AUTH0_ALLOW_DELETE": {
       "description": "Allows the extension to delete objects that does not exist within the repository.",

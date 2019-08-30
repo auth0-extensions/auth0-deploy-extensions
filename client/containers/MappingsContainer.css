@@ -1,0 +1,7 @@
+#mappings textarea.mappings-input {
+  font-weight: normal;
+  resize: vertical;
+  width: 100%;
+  min-width: 400px;
+  min-height: 200px;
+}
