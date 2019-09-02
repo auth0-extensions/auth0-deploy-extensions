@@ -5,7 +5,7 @@ const config = require('./server/lib/config');
 const logger = require('./server/lib/logger');
 
 const createServer = tools.createServer((cfg, storage) => {
-  logger.info('Starting Bitbucket Deploy extension - Version:', process.env.CLIENT_VERSION);
+  logger.info('Starting Auth0 Deploy extension - Version:', process.env.CLIENT_VERSION);
   return expressApp(cfg, storage);
 });
 
