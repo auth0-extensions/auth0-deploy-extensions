@@ -80,6 +80,10 @@ module.exports = {
       {
         name: 'ClientTwo',
         configFile: '{ "string":"Client Two Config", "array": [ ##ONE##, "##TWO##" ] }'
+      },
+      {
+        name: 'ClientThree',
+        configFile: { string: 'Client ##THREE## Config', array: [] }
       }
     ],
     clientGrants: [],
