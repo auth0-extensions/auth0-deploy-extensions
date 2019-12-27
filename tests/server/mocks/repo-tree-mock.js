@@ -63,6 +63,12 @@ module.exports = {
     'rule1.json': { order: 10, enabled: false },
     'rule2.js': 'rule2 script'
   },
+  hooks: {
+    'hook1.js': 'hook1 script',
+    'hook1.json': { name: 'Hook-1', triggerId: 'client-credentials', enabled: true },
+    'hook2.js': 'hook2 script',
+    'hook2.json': { name: 'Hook-2', triggerId: 'post-user-registration', enabled: true, secrets: { TEST: 'test' } }
+  },
   roles: {
     'role.json': {
       name: 'Test role',

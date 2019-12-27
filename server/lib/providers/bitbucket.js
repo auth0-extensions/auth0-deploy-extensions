@@ -107,6 +107,7 @@ const getTree = (parsedRepo, branch, sha) => {
     databases: getDBConnectionsTree(params),
     tenant: getTreeByDir(params, ''),
     rules: getTreeByDir(params, constants.RULES_DIRECTORY),
+    hooks: getTreeByDir(params, constants.HOOKS_DIRECTORY),
     pages: getTreeByDir(params, constants.PAGES_DIRECTORY),
     roles: getTreeByDir(params, constants.ROLES_DIRECTORY),
     emails: getTreeByDir(params, constants.EMAIL_TEMPLATES_DIRECTORY),
@@ -122,6 +123,7 @@ const getTree = (parsedRepo, branch, sha) => {
   return Promise.props(promises)
     .then((result) => (_.union(
       result.rules,
+      result.hooks,
       result.databases,
       result.tenant,
       result.emails,
@@ -223,8 +225,8 @@ const downloadConfigurable = (parsedRepo, branch, name, item, shaToken) => {
 /*
  * Determine if we have the script, the metadata or both.
  */
-const getRules = (parsedRepo, branch, files, shaToken) => {
-  const rules = utils.getRulesFiles(files);
+const getHooksOrRules = (parsedRepo, branch, files, shaToken, dir) => {
+  const rules = utils.getHooksOrRulesFiles(files, dir);
 
   // Download all rules.
   return Promise.map(Object.keys(rules), (ruleName) =>
@@ -350,7 +352,8 @@ export function getChanges({ repository, branch, sha, mappings }) {
 
         const promises = {
           tenant: getTenant(parsedRepo, branch, files, sha),
-          rules: getRules(parsedRepo, branch, files, sha),
+          rules: getHooksOrRules(parsedRepo, branch, files, sha, constants.RULES_DIRECTORY),
+          hooks: getHooksOrRules(parsedRepo, branch, files, sha, constants.HOOKS_DIRECTORY),
           databases: getDatabaseData(parsedRepo, branch, files, sha),
           emailProvider: getEmailProvider(parsedRepo, branch, files, sha),
           emailTemplates: getHtmlTemplates(parsedRepo, branch, files, sha, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),

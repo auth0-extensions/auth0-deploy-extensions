@@ -20,8 +20,8 @@ const getPrefix = () =>
 /*
  * Check if a file is part of the rules folder.
  */
-const isRule = (file) =>
-  file.indexOf(`${path.join(getPrefix(), constants.RULES_DIRECTORY)}/`) === 0;
+const isHookOrRule = (file, dir) =>
+  file.indexOf(`${path.join(getPrefix(), dir)}/`) === 0;
 
 /*
  * Check if a file is part of the database folder.
@@ -119,7 +119,9 @@ const validFilesOnly = (fileName) => {
     return true;
   } else if (isGuardianFile(fileName)) {
     return true;
-  } else if (isRule(fileName)) {
+  } else if (isHookOrRule(fileName, constants.RULES_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isHookOrRule(fileName, constants.HOOKS_DIRECTORY)) {
     return /\.(js|json)$/i.test(fileName);
   } else if (isConfigurable(fileName, constants.ROLES_DIRECTORY)) {
     return /\.(js|json)$/i.test(fileName);
@@ -225,10 +227,10 @@ const getTplFiles = (files, directory, allowedNames) => {
   return templates;
 };
 
-const getRulesFiles = (files) => {
+const getHooksOrRulesFiles = (files, dir) => {
   const rules = {};
 
-  _.filter(files, f => isRule(f.path)).forEach(file => {
+  _.filter(files, f => isHookOrRule(f.path, dir)).forEach(file => {
     const ruleName = path.parse(file.path).name;
     rules[ruleName] = rules[ruleName] || {};
 
@@ -277,6 +279,13 @@ const unifyItem = (item, type, mappings) => {
       const { order = 0, enabled, stage = 'login_success' } = meta;
 
       return ({ script, name: item.name, order, stage, enabled });
+    }
+    case 'hooks': {
+      const meta = extractFileContent(item.metadataFile, mappings);
+      const script = extractFileContent(item.scriptFile, mappings, true);
+      const { name, enabled, triggerId, secrets = {}, dependencies = {} } = meta;
+
+      return ({ name, enabled, triggerId, secrets, dependencies, script });
     }
     case 'pages': {
       const meta = extractFileContent(item.metadataFile, mappings);
@@ -406,7 +415,7 @@ module.exports = {
   unifyData,
   getBaseDir,
   getPrefix,
-  isRule,
+  isHookOrRule,
   isDatabaseConnection,
   isTemplate,
   isTenantFile,
@@ -416,7 +425,7 @@ module.exports = {
   getDatabaseFiles,
   getConfigurablesFiles,
   getTplFiles,
-  getRulesFiles,
+  getHooksOrRulesFiles,
   validFilesOnly,
   getOptions,
   parseRepo

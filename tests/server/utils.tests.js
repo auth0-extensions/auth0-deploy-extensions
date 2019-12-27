@@ -26,6 +26,12 @@ describe('unifyData', () => {
         expect(unified.rules[0].stage).toEqual('login_success');
         expect(unified.rules[0].enabled).toEqual(true);
 
+        expect(unified.hooks).toBeAn('array');
+        expect(unified.hooks[0]).toBeAn('object');
+        expect(unified.hooks[0].script).toEqual('Hook script');
+        expect(unified.hooks[0].name).toEqual('Hook');
+        expect(unified.hooks[0].triggerId).toEqual('client-credentials');
+
         expect(unified.databases).toBeAn('array');
         expect(unified.databases[0]).toBeAn('object');
         expect(unified.databases[0].options).toBeAn('object');

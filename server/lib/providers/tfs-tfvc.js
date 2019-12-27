@@ -135,6 +135,7 @@ const getTree = (project, changesetId) =>
     const promises = {
       tenant: getConfigurableTree(project, ''),
       rules: getConfigurableTree(project, constants.RULES_DIRECTORY),
+      hooks: getConfigurableTree(project, constants.HOOKS_DIRECTORY),
       databases: getConnectionsTree(project, changesetId),
       emails: getConfigurableTree(project, constants.EMAIL_TEMPLATES_DIRECTORY),
       guardianFactors: getConfigurableTree(project, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
@@ -153,6 +154,7 @@ const getTree = (project, changesetId) =>
       .then(result => resolve(_.union(
         result.tenant,
         result.rules,
+        result.hooks,
         result.databases,
         result.emails,
         result.guardianFactors,
@@ -256,8 +258,8 @@ const downloadConfigurable = (changesetId, name, item) => {
 /*
  * Determine if we have the script, the metadata or both.
  */
-const getRules = (changesetId, files) => {
-  const rules = utils.getRulesFiles(files);
+const getHooksOrRules = (changesetId, files, dir) => {
+  const rules = utils.getHooksOrRulesFiles(files, dir);
 
   // Download all rules.
   return Promise.map(Object.keys(rules), ruleName => downloadRule(changesetId, ruleName, rules[ruleName]), { concurrency: 2 });
@@ -376,7 +378,8 @@ export const getChanges = ({ project, changesetId, mappings }) =>
 
       const promises = {
         tenant: getTenant(changesetId, files),
-        rules: getRules(changesetId, files),
+        rules: getHooksOrRules(changesetId, files, constants.RULES_DIRECTORY),
+        hooks: getHooksOrRules(changesetId, files, constants.HOOKS_DIRECTORY),
         databases: getDatabaseData(changesetId, files),
         emailProvider: getEmailProvider(changesetId, files),
         emailTemplates: getHtmlTemplates(changesetId, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
