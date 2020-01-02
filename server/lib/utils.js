@@ -244,16 +244,20 @@ const getRulesFiles = (files) => {
   return rules;
 };
 
-const extractFileContent = (item) => {
-  if (typeof item === 'string') {
-    try {
-      item = JSON.parse(item);
-    } catch (e) {
-      logger.info(`Cannot extract data from:\n${item}`);
-    }
+const extractFileContent = (item = {}, mappings, asString) => {
+  const content = (typeof item === 'object') ? JSON.stringify(item) : item;
+  const converted = keywordReplace(content, mappings);
+
+  if (asString) {
+    return converted;
   }
 
-  return item || {};
+  try {
+    return JSON.parse(converted);
+  } catch (e) {
+    logger.info(`Cannot extract data from:\n${item}\nError:${e}`);
+    return item;
+  }
 };
 
 const checkSessionLifetime = (data, property) => {
@@ -264,40 +268,30 @@ const checkSessionLifetime = (data, property) => {
   }
 };
 
-const applyMappings = (item, mappings) => {
-  const result = {};
-  Object.keys(item).forEach((key) => {
-    if (Array.isArray(item[key])) {
-      result[key] = JSON.parse(keywordReplace(JSON.stringify(item[key]), mappings));
-    } else {
-      result[key] = typeof item[key] !== 'string' ? item[key] : keywordReplace(item[key], mappings);
-    }
-  });
-
-  return result;
-};
-
-const unifyItem = (item, type) => {
+const unifyItem = (item, type, mappings) => {
   switch (type) {
     default:
     case 'rules': {
-      const meta = extractFileContent(item.metadataFile);
+      const meta = extractFileContent(item.metadataFile, mappings);
+      const script = extractFileContent(item.scriptFile, mappings, true);
       const { order = 0, enabled, stage = 'login_success' } = meta;
 
-      return ({ script: item.scriptFile, name: item.name, order, stage, enabled });
+      return ({ script, name: item.name, order, stage, enabled });
     }
     case 'pages': {
-      const meta = extractFileContent(item.metadataFile);
+      const meta = extractFileContent(item.metadataFile, mappings);
+      const html = extractFileContent(item.htmlFile, mappings, true);
       const { enabled } = meta;
 
-      return ({ html: item.htmlFile, name: item.name, enabled });
+      return ({ html, name: item.name, enabled });
     }
 
     case 'emailTemplates': {
       if (item.name === 'provider') return null;
-      const meta = extractFileContent(item.metadataFile);
+      const meta = extractFileContent(item.metadataFile, mappings);
+      const body = extractFileContent(item.htmlFile, mappings, true);
 
-      return ({ ...meta, body: item.htmlFile });
+      return ({ ...meta, body });
     }
     case 'roles':
     case 'clientGrants':
@@ -305,13 +299,13 @@ const unifyItem = (item, type) => {
     case 'guardianFactorTemplates':
     case 'guardianFactorProviders':
     case 'emailProvider': {
-      const data = extractFileContent(item.configFile);
+      const data = extractFileContent(item.configFile, mappings);
 
       return ({ ...data });
     }
 
     case 'tenant': {
-      const data = extractFileContent(item.configFile);
+      const data = extractFileContent(item.configFile, mappings);
       checkSessionLifetime(data, 'session_lifetime');
       checkSessionLifetime(data, 'idle_session_lifetime');
 
@@ -319,11 +313,11 @@ const unifyItem = (item, type) => {
     }
 
     case 'databases': {
-      const settings = extractFileContent(item.settings);
+      const settings = extractFileContent(item.settings, mappings);
       const customScripts = {};
       const options = settings.options || {};
 
-      _.forEach(item.scripts, (script) => { customScripts[script.name] = script.scriptFile; });
+      _.forEach(item.scripts, (script) => { customScripts[script.name] = extractFileContent(script.scriptFile, mappings, true); });
 
       if (item.scripts && item.scripts.length && options.enabledDatabaseCustomization !== false) {
         options.customScripts = customScripts;
@@ -336,14 +330,14 @@ const unifyItem = (item, type) => {
     case 'resourceServers':
     case 'connections':
     case 'clients': {
-      const meta = extractFileContent(item.metadataFile);
-      const data = extractFileContent(item.configFile);
+      const meta = extractFileContent(item.metadataFile, mappings);
+      const data = extractFileContent(item.configFile, mappings);
 
       return ({ name: item.name, ...meta, ...data });
     }
 
     case 'rulesConfigs': {
-      const data = extractFileContent(item.configFile);
+      const data = extractFileContent(item.configFile, mappings);
 
       return ({ key: item.name, value: data.value });
     }
@@ -357,11 +351,11 @@ const unifyData = (assets, mappings) => {
     result[type] = [];
     if (Array.isArray(data)) {
       _.forEach(data, (item) => {
-        const unified = unifyItem(applyMappings(item, mappings), type);
+        const unified = unifyItem(item, type, mappings);
         if (unified) result[type].push(unified);
       });
     } else {
-      result[type] = unifyItem(applyMappings(data, mappings), type);
+      result[type] = unifyItem(data, type, mappings);
     }
   });
 

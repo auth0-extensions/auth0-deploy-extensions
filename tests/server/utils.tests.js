@@ -68,7 +68,7 @@ describe('unifyData', () => {
   });
 
   it('should unify mapped assets', (done) => {
-    utils.unifyData(assets.mapped, { MAP_ONE: 'first', MAP_TWO: 'second', ARR_MAP: [ 1, 2 ], ONE: 1, TWO: 'two' })
+    utils.unifyData(assets.mapped, { MAP_ONE: 'first', MAP_TWO: 'second', THREE: 'Three', ARR_MAP: [ 1, 2 ], ONE: 1, TWO: 'two' })
       .then((unified) => {
         expect(unified.rules[0].script).toEqual('Rule script with first');
         expect(unified.rules[0].name).toEqual('Rule');
@@ -84,6 +84,10 @@ describe('unifyData', () => {
         expect(unified.clients[1].name).toEqual('ClientTwo');
         expect(unified.clients[1].string).toEqual('Client Two Config');
         expect(unified.clients[1].array).toEqual([ 1, 'two' ]);
+
+        expect(unified.clients[2].name).toEqual('ClientThree');
+        expect(unified.clients[2].string).toEqual('Client Three Config');
+        expect(unified.clients[2].array).toEqual([]);
 
         expect(unified.rulesConfigs).toNotExist();
         expect(unified.emailProvider).toNotExist();

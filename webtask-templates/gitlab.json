@@ -1,7 +1,7 @@
 {
   "title": "GitLab Deployments",
   "name": "auth0-gitlab-deploy",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "preVersion": "2.11.0",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Hosted Pages, Rules and Custom Database Connections from GitLab.",
