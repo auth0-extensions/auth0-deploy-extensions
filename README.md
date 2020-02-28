@@ -140,6 +140,11 @@ https://YOU.ngrok.io/login
 
 ### Deployment
 
+Since this is a monorepo, there are now 2 parts, the UI and the webtasks. The UI is shared by each individual webtask and is deployed seperately and manually.
+
 ```
 npm run build
 ```
+The output will be in the `/dist` directory. The root will contain the UI files and each extension will have its own directory. If updating an extension without a change on the client, use the deploy tool to deploy only the bundle (no need to upload the client files).
+
+If the client has been updated, the version number needs to be updated here: https://github.com/auth0-extensions/auth0-deploy-extensions/blob/master/package.json#L78

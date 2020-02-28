@@ -1,6 +1,6 @@
 {
   "name": "auth0-deploy-extensions",
-  "version": "2.0.0",
+  "version": "3.1.0",
   "description": "Auth0 Deployment Extensions",
   "engines": {
     "node": "5.9.0"
@@ -82,7 +82,7 @@
   "dependencies": {
     "async": "2.1.2",
     "auth0": "2.17.0",
-    "auth0-extension-express-tools": "^1.1.9",
+    "auth0-extension-express-tools": "^2.0.0",
     "auth0-extension-tools": "1.4.0",
     "auth0-extension-ui": "^1.0.1",
     "auth0-oauth2-express": "^1.1.8",
@@ -101,7 +101,7 @@
     "body-parser": "^1.15.2",
     "ejs": "^2.4.2",
     "expect": "^1.20.2",
-    "express": "^4.14.0",
+    "express": "^4.17.0",
     "express-jwt": "^3.4.0",
     "github": "0.2.4",
     "gitlab": "3.4.2",
