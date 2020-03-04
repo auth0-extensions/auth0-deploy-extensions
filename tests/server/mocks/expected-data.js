@@ -18,7 +18,15 @@ module.exports = {
   databases: [
     {
       enabled_clients: [
-        'client'
+        'client_A'
+      ],
+      options: {},
+      strategy: 'auth0',
+      name: 'db-connection-1'
+    },
+    {
+      enabled_clients: [
+        'client_A'
       ],
       options: {
         customScripts: {
@@ -27,7 +35,30 @@ module.exports = {
         enabledDatabaseCustomization: true
       },
       strategy: 'auth0',
-      name: 'test-db'
+      name: 'db-connection-2'
+    },
+    {
+      enabled_clients: [
+        'client_B'
+      ],
+      options: {
+        customScripts: {
+          login: 'login function content'
+        },
+        enabledDatabaseCustomization: true
+      },
+      strategy: 'auth0',
+      name: 'db-connection-3'
+    },
+    {
+      options: {
+        customScripts: {
+          get_user: 'get_user function content'
+        },
+        enabledDatabaseCustomization: true
+      },
+      strategy: 'auth0',
+      name: 'db-connection-4'
     }
   ],
   emailProvider: {

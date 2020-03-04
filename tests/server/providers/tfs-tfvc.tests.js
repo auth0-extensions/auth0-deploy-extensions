@@ -40,15 +40,16 @@ const generateTreeByDir = (dir) => {
   }
 
   if (type === 'database-connections') {
-    tree.push({ isFolder: true, path: 'tenant/database-connections/test-db' });
+    const dbTypes = Object.keys(files).filter(t =>
+      t.startsWith('database-connections')
+    );
+    for (let i = 0; i < dbTypes.length; i++) {
+      tree.push({ isFolder: true, path: `tenant/${dbTypes[i]}` });
+    }
     return tree;
   }
 
-  if (type === 'test-db') {
-    type = 'database-connections';
-  }
-
-  if (subType === 'guardian') {
+  if (subType === 'guardian' || subType === 'database-connections') {
     type = `${subType}/${type}`;
   }
 
@@ -58,10 +59,7 @@ const generateTreeByDir = (dir) => {
     const name = items[j];
 
     const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-    const path = (type === 'database-connections')
-      ? `$/TFVC-test/tenant/${type}/test-db/${name}`
-      : `$/TFVC-test/tenant/${type}/${name}`;
-
+    const path = `$/TFVC-test/tenant/${type}/${name}`;
     nock('https://test-instance.visualstudio.com')
       .get(`/defaultCollection/_apis/tfvc/items?path=${path}&api-version=5.0&includeContent=true`)
       .reply(200, { content });
