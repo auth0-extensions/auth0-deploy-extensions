@@ -22,7 +22,7 @@ repository =>
     some other resource server.json
   database-connections
     my-connection-name
-      settings.json
+      database.json
       get_user.js
       login.js
   rules-configs
