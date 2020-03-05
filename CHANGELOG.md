@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [3.1.1] - 2020-03-06
+
+### auth0-bitbucket-deploy v3.1.1
+### auth0-github-deploy v3.1.1
+### auth0-gitlab-deploy v3.1.1
+### auth0-visualstudio-deploy v3.1.1
+- #### Changed
+  - Add support for `database.json` as the configuration file for a database connection
+  - When both `database.json` and `settings.json` are present in the same folder for a database connection, `database.json` takes precedence over `settings.json` and the latter is ignored
+
 ## [2.0.0] - 2019-09-02
 
 ### auth0-bitbucket-deploy v3.0.0

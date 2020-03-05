@@ -1,7 +1,7 @@
 {
   "title": "Bitbucket Deployments",
   "name": "auth0-bitbucket-deploy",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "preVersion": "2.10.0",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Hosted Pages, Rules and Custom Database Connections from Bitbucket.",
