@@ -14,6 +14,12 @@ module.exports = {
         name: 'login',
         scriptFile: 'Database login script'
       } ]
+    }, {
+      name: 'Database 2 with only scripts',
+      scripts: [ {
+        name: 'get_user',
+        scriptFile: 'Database 2 get_user script'
+      } ]
     } ],
     emailProvider: {
       name: 'emailProvider',

@@ -27,6 +27,7 @@ describe('unifyData', () => {
         expect(unified.rules[0].enabled).toEqual(true);
 
         expect(unified.databases).toBeAn('array');
+
         expect(unified.databases[0]).toBeAn('object');
         expect(unified.databases[0].options).toBeAn('object');
         expect(unified.databases[0].strategy).toEqual('auth0');
@@ -36,6 +37,14 @@ describe('unifyData', () => {
         expect(unified.databases[0].options.customScripts).toBeAn('object');
         expect(unified.databases[0].options.customScripts.login).toEqual('Database login script');
         expect(unified.databases[0].options.enabledDatabaseCustomization).toEqual(true);
+
+        expect(unified.databases[1]).toBeAn('object');
+        expect(unified.databases[1].options).toBeAn('object');
+        expect(unified.databases[1].strategy).toEqual('auth0');
+        expect(unified.databases[1].name).toEqual('Database 2 with only scripts');
+        expect(unified.databases[1].options.customScripts).toBeAn('object');
+        expect(unified.databases[1].options.customScripts.get_user).toEqual('Database 2 get_user script');
+        expect(unified.databases[1].options.enabledDatabaseCustomization).toEqual(true);
 
         expect(unified.emailProvider.string).toEqual('Email Provider');
 

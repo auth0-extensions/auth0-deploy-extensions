@@ -48,11 +48,28 @@ module.exports = {
       name: 'connection'
     }
   },
-  'database-connections': {
+  'database-connections/db-connection-1': {
+    'database.json': {
+      enabled_clients: [ 'client_A' ]
+    },
     'settings.json': {
-      enabled_clients: [ 'client' ]
+      enabled_clients: [ 'client_B' ]
+    }
+  },
+  'database-connections/db-connection-2': {
+    'database.json': {
+      enabled_clients: [ 'client_A' ]
     },
     'login.js': 'login function content'
+  },
+  'database-connections/db-connection-3': {
+    'settings.json': {
+      enabled_clients: [ 'client_B' ]
+    },
+    'login.js': 'login function content'
+  },
+  'database-connections/db-connection-4': {
+    'get_user.js': 'get_user function content'
   },
   'rules-configs': {
     'secret1.json': { value: 'first-secret' },

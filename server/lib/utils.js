@@ -58,7 +58,7 @@ const isGuardianFile = (file) => {
     || file.startsWith(path.join(guardianDir, constants.GUARDIAN_TEMPLATES_DIRECTORY));
 
   return isJSON && isGuardian;
-}
+};
 
 /*
  * Check if a file is part of configurable folder.
@@ -81,7 +81,7 @@ const getDatabaseScriptDetails = (filename) => {
     if (constants.DATABASE_SCRIPTS.indexOf(scriptName) > -1) {
       return {
         database: parts[length - 2],
-        name: path.parse(scriptName).name
+        name: scriptName
       };
     }
   }
@@ -89,14 +89,16 @@ const getDatabaseScriptDetails = (filename) => {
   return null;
 };
 
-const getDatabaseSettingsDetails = (filename) => {
+const getDatabaseSettingsDetails = filename => {
+  const supportedDbConfigFiles = ['database.json', 'settings.json'];
+
   if (config('TYPE') === 'tfvc') {
     filename = filename.replace(`${config('PROJECT_PATH')}/`, '');
   }
 
   const parts = filename.split('/');
   const length = parts.length;
-  if (length >= 3 && parts[length - 1] === 'settings.json') {
+  if (length >= 3 && supportedDbConfigFiles.includes(parts[length - 1])) {
     return {
       database: parts[length - 2],
       name: 'settings'
@@ -144,8 +146,22 @@ const validFilesOnly = (fileName) => {
 
 const getDatabaseFiles = (files) => {
   const databases = {};
+  const dbFiles = files.filter(f => isDatabaseConnection(f.path));
+  const databaseJsonFiles = dbFiles
+    .map(f => f.path)
+    .filter(f => f.endsWith('database.json'));
 
-  _.filter(files, f => isDatabaseConnection(f.path)).forEach(file => {
+  dbFiles.forEach(file => {
+    if (
+      file.path.endsWith('settings.json') &&
+      databaseJsonFiles.includes(
+        file.path.replace(/settings.json$/i, 'database.json')
+      )
+    ) {
+      // Found a database.json under the same directory, ignoring this settings.json file
+      return;
+    }
+
     const script = getDatabaseScriptDetails(file.path);
     const settings = getDatabaseSettingsDetails(file.path);
 
