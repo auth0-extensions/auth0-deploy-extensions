@@ -16,6 +16,16 @@ const defaultConfig = {
 
 const generateTree = () => {
   const types = Object.keys(files);
+  const dbTypes = types.filter(type => type.startsWith('database-connections'));
+
+  const dbTree = [];
+  for (let i = 0; i < dbTypes.length; i++) {
+    dbTree.push({ type: 'commit_directory', path: `tenant/${dbTypes[i]}` });
+  }
+  nock('https://api.bitbucket.org')
+    .get('/2.0/repositories/test/auth0/src/sha/tenant/database-connections')
+    .query(() => true)
+    .reply(200, { values: dbTree });
 
   for (let i = 0; i < types.length; i++) {
     const type = types[i];
@@ -41,10 +51,10 @@ const generateTree = () => {
       for (let j = 0; j < items.length; j++) {
         const name = items[j];
 
-        const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-        const path = (type === 'database-connections')
-          ? `tenant/${type}/test-db/${name}`
-          : `tenant/${type}/${name}`;
+        const content = name.endsWith('.json')
+          ? JSON.stringify(files[type][name])
+          : files[type][name];
+        const path = `tenant/${type}/${name}`;
 
         tree.push({ type: 'blob', path, name });
 
@@ -55,22 +65,10 @@ const generateTree = () => {
       }
     }
 
-    if (type === 'database-connections') {
-      nock('https://api.bitbucket.org')
-        .get('/2.0/repositories/test/auth0/src/sha/tenant/database-connections')
-        .query(() => true)
-        .reply(200, { values: [ { type: 'commit_directory', path: 'tenant/database-connections/test-db' } ] });
-
-      nock('https://api.bitbucket.org')
-        .get('/2.0/repositories/test/auth0/src/sha/tenant/database-connections/test-db')
-        .query(() => true)
-        .reply(200, { values: tree });
-    } else {
-      nock('https://api.bitbucket.org')
-        .get(`/2.0/repositories/test/auth0/src/sha/tenant/${type}`)
-        .query(() => true)
-        .reply(200, { values: tree });
-    }
+    nock('https://api.bitbucket.org')
+      .get(`/2.0/repositories/test/auth0/src/sha/tenant/${type}`)
+      .query(() => true)
+      .reply(200, { values: tree });
   }
 };
 

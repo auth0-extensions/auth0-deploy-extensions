@@ -37,13 +37,9 @@ const generateTree = () => {
     } else {
       for (let j = 0; j < items.length; j++) {
         const name = items[j];
-
         const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
         const sha = `${name}.sha`;
-        const path = (type === 'database-connections')
-          ? `tenant/${type}/test-db/${name}`
-          : `tenant/${type}/${name}`;
-
+        const path = `tenant/${type}/${name}`;
         tree.push({ type: 'blob', path, sha });
 
         nock('https://test.gh')

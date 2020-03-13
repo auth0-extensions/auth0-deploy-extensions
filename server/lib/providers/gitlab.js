@@ -25,11 +25,6 @@ const getApi = () => {
 };
 
 /*
- * Only valid Javascript for Connections.
- */
-const validConnectionsOnly = (fileName) => /\.(js)$/i.test(fileName) || fileName === 'settings.json';
-
-/*
  * Get a flat list of changes and files that need to be added/updated/removed.
  */
 export const hasChanges = (commits) =>
@@ -76,8 +71,7 @@ const getDBConnectionTreeByPath = (projectId, branch, filePath) =>
     }
 
     const files = res
-      .filter(f => f.type === 'blob')
-      .filter(f => validConnectionsOnly(f.name));
+      .filter(f => f.type === 'blob');
 
     files.forEach((elem, idx) => {
       files[idx].path = `${utils.getBaseDir()}${constants.DATABASE_CONNECTIONS_DIRECTORY}/${filePath}/${elem.name}`;

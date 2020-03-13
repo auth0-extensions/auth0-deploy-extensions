@@ -16,6 +16,19 @@ const defaultConfig = {
 
 const generateTree = () => {
   const types = Object.keys(files);
+  const dbTypes = types.filter(type => type.startsWith('database-connections'));
+
+  const dbTree = [];
+  for (let i = 0; i < dbTypes.length; i++) {
+    const path = dbTypes[i];
+    const name = path.split('/').slice(-1)[0];
+    dbTree.push({ type: 'tree', path, name });
+  }
+  nock('https://test.gl')
+    .get(
+      '/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2Fdatabase-connections'
+    )
+    .reply(200, dbTree);
 
   for (let i = 0; i < types.length; i++) {
     const type = types[i];
@@ -41,9 +54,7 @@ const generateTree = () => {
         const name = items[j];
 
         const content = (name.endsWith('.json')) ? JSON.stringify(files[type][name]) : files[type][name];
-        const path = (type === 'database-connections')
-          ? `tenant/${type}/test-db/${name}`
-          : `tenant/${type}/${name}`;
+        const path = `tenant/${type}/${name}`;
 
         tree.push({ type: 'blob', path, name });
 
@@ -52,20 +63,9 @@ const generateTree = () => {
           .query(() => true)
           .reply(200, { content: new Buffer(content) });
       }
-
-      if (type === 'database-connections') {
-        nock('https://test.gl')
-          .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}`)
-          .reply(200, [ { type: 'tree', path: 'tenant/database-connections/test-db', name: 'test-db' } ]);
-
-        nock('https://test.gl')
-          .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type}%2Ftest-db`)
-          .reply(200, tree);
-      } else {
-        nock('https://test.gl')
-          .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type.replace(RegExp('/', 'g'), '%2F')}`)
-          .reply(200, tree);
-      }
+      nock('https://test.gl')
+      .get(`/api/v4/projects/projectId/repository/tree?ref=branch&path=tenant%2F${type.replace(RegExp('/', 'g'), '%2F')}`)
+      .reply(200, tree);
     }
   }
 };
