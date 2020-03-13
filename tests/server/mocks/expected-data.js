@@ -30,7 +30,7 @@ module.exports = {
       triggerId: 'post-user-registration',
       enabled: true,
       secrets: { TEST: 'test' },
-      dependencies: {}
+      dependencies: { bcrypt: '1.0.0' }
     }
   ],
   databases: [

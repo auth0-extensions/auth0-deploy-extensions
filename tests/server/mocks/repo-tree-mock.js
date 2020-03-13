@@ -84,7 +84,7 @@ module.exports = {
     'hook1.js': 'hook1 script',
     'hook1.json': { name: 'Hook-1', triggerId: 'client-credentials', enabled: true },
     'hook2.js': 'hook2 script',
-    'hook2.json': { name: 'Hook-2', triggerId: 'post-user-registration', enabled: true, secrets: { TEST: 'test' } }
+    'hook2.json': { name: 'Hook-2', triggerId: 'post-user-registration', enabled: true, secrets: { TEST: 'test' }, dependencies: { bcrypt: '1.0.0' } }
   },
   roles: {
     'role.json': {
