@@ -31,7 +31,7 @@ jobs:
       - run: npm run build
       - run:
           name: Compress Artifacts
-          command: tar -cvf dist.tar dist/
+          command: tar -zcvf dist.tar.gz dist/
       - store_artifacts:
           path: dist.tar
 
