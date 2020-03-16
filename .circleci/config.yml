@@ -2,45 +2,66 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
+version: 2.1
 jobs:
-  build:
-    docker:
-      - image: circleci/node:8.12
-
+  build_and_test:
     working_directory: ~/repo
+    parameters:
+      v:
+        type: string
+        default: "8"
+    docker:
+      - image: circleci/node:<< parameters.v >>
 
     steps:
       - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - npm-dependencies-{{ checksum "package-lock.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - npm-dependencies-
-
-      #- run:
-      #    name: Install FOSSA
-      #    command: |
-      #      curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
-
-      - run: npm install
-
-      #- run:
-      #    name: FOSSA Init
-      #    command: fossa init
-      #- run:
-      #    name: FOSSA Analyze
-      #    command: fossa analyze
-      #- run:
-      #    name: FOSSA Test
-      #    command: fossa test
-
-      - save_cache:
-          name: Save npm packages to cache
-          key: npm-dependencies-{{ checksum "package-lock.json" }}
-          paths:
-            - ./node_modules
-
+      - run: npm ci
       - run: npm run test
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+
+  deploy:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:12
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: npm run build
+      - run:
+          name: Compress Artifacts
+          command: tar -cvf dist.tar dist/
+      - store_artifacts:
+          path: dist.tar
+
+workflows:
+  version: 2.1
+  build_and_test:
+    jobs:
+      - build_and_test:
+          name: build_and_test_node8
+          v: "8"
+      - build_and_test:
+          name: build_and_test_node12
+          v: "12"
+      - build_and_test:
+          name: build_and_test_node13
+          v: "13"
+  build_test_and_deploy:
+    jobs:
+      - build_and_test:
+          v: "8" # Change this when we move to node 12.
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: master
+      - deploy:
+          requires:
+            - build_and_test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/

@@ -3,6 +3,7 @@
 These extensions makes it possible to deploy Rules and Database Connection scripts from Bitbucket, Github, Gitlab or VisualStudio to Auth0.
 
 ## Usage
+
 There is more extensive documentation online for how the files are expected to be laid out to work with the source control configuration utilities [here](https://auth0.com/docs/extensions/bitbucket-deploy).
 
 #### Organize your repository
@@ -43,7 +44,9 @@ repository =>
 ```
 
 ##### Roles
+
 In the .json file you can specify roles options, the name of the file does not matter. Example:
+
 ```
 {
   "name": "Role name",
@@ -58,13 +61,15 @@ In the .json file you can specify roles options, the name of the file does not m
 ```
 
 ##### Clients
+
 The name of the file is the name of the client that is created or updated.
 
-In the .json file you can put the same json you would put when using the Management API for creating clients.  It will only try to keep the fields specified inline with what is configured already.  If a client doesn't exist yet, it will create it.
-
+In the .json file you can put the same json you would put when using the Management API for creating clients. It will only try to keep the fields specified inline with what is configured already. If a client doesn't exist yet, it will create it.
 
 ##### Clients Grants
+
 In the .json file you can specify client grants options, the name of the file does not matter. Example:
+
 ```
 {
   "client_id": "client1",
@@ -76,15 +81,19 @@ In the .json file you can specify client grants options, the name of the file do
 ```
 
 ##### Resource servers
+
 The name of the file is the name of the resource server that is created or updated.
 
-In the .json file you can put the same json you would put when using the Management API for creating resource servers.  It will only try to keep the fields specified inline with what is configured already.  If a resource server doesn't exist yet, it will create it.
+In the .json file you can put the same json you would put when using the Management API for creating resource servers. It will only try to keep the fields specified inline with what is configured already. If a resource server doesn't exist yet, it will create it.
 
 ##### Database Connections
+
 See Database Connection configuration [here](https://auth0.com/docs/extensions/bitbucket-deploy#deploy-database-connection-scripts)
 
 ##### Rules Configs
+
 In the .json file you can define value for rule-config, while filename is a key:
+
 ```
 {
   "value": "some-secret-value"
@@ -92,11 +101,13 @@ In the .json file you can define value for rule-config, while filename is a key:
 ```
 
 ##### Rules
+
 See Rules configuration [here](https://auth0.com/docs/extensions/bitbucket-deploy#deploy-rules)
 
 NOTE: There is not currently a way to mark rules as manual yet, that will become part of the configuration file in the future.
 
 ##### Custom Pages
+
 See Custom Pages configuration [here](https://auth0.com/docs/extensions/bitbucket-deploy#deploy-hosted-pages)
 
 ## Running
@@ -140,11 +151,14 @@ https://YOU.ngrok.io/login
 
 ### Deployment
 
+Deployment artifacts are automatically generated when a git tag (or a github release) is created with the `v*` format. These artifacts are stored on the circle build job. These can then be downloaded and uploaded via the Extensions Deployer Tool.
+
 Since this is a monorepo, there are now 2 parts, the UI and the webtasks. The UI is shared by each individual webtask and is deployed seperately and manually.
 
 ```
 npm run build
 ```
+
 The output will be in the `/dist` directory. The root will contain the UI files and each extension will have its own directory. If updating an extension without a change on the client, use the deploy tool to deploy only the bundle (no need to upload the client files).
 
 If the client has been updated, the version number needs to be updated here: https://github.com/auth0-extensions/auth0-deploy-extensions/blob/master/package.json#L78
