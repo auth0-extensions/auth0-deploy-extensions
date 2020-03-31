@@ -107,7 +107,7 @@
     "immutable": "^3.8.1",
     "jsonwebtoken": "^7.1.9",
     "jwt-decode": "^2.1.0",
-    "lodash": "^4.8.2",
+    "lodash": "^4.17.13",
     "lru-memoizer": "^1.6.0",
     "moment": "^2.13.0",
     "morgan": "^1.7.0",
