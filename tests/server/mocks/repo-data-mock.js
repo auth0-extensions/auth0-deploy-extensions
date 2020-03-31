@@ -7,6 +7,13 @@ module.exports = {
       scriptFile: 'Rule script',
       metadataFile: '{ "enabled":true }'
     } ],
+    hooks: [ {
+      script: true,
+      metadata: true,
+      name: 'test-script-111',
+      scriptFile: 'Hook script',
+      metadataFile: '{ "name": "Hook", "triggerId": "client-credentials" }'
+    } ],
     databases: [ {
       name: 'Database',
       settings: '{ "options": { "enabled_clients": [ "whatever" ] } }',

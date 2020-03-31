@@ -15,6 +15,24 @@ module.exports = {
       stage: 'login_success'
     }
   ],
+  hooks: [
+    {
+      script: 'hook1 script',
+      name: 'Hook-1',
+      triggerId: 'client-credentials',
+      enabled: true,
+      secrets: {},
+      dependencies: {}
+    },
+    {
+      script: 'hook2 script',
+      name: 'Hook-2',
+      triggerId: 'post-user-registration',
+      enabled: true,
+      secrets: { TEST: 'test' },
+      dependencies: { bcrypt: '1.0.0' }
+    }
+  ],
   databases: [
     {
       enabled_clients: [

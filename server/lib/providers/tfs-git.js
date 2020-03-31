@@ -190,8 +190,8 @@ const downloadConfigurable = (repositoryId, branch, name, item) => {
 /*
  * Determine if we have the script, the metadata or both.
  */
-const getRules = (repositoryId, branch, files) => {
-  const rules = utils.getRulesFiles(files);
+const getHooksOrRules = (repositoryId, branch, files, dir) => {
+  const rules = utils.getHooksOrRulesFiles(files, dir);
 
   // Download all rules.
   return Promise.map(Object.keys(rules), (ruleName) => downloadRule(repositoryId, branch, ruleName, rules[ruleName]), { concurrency: 2 });
@@ -311,7 +311,8 @@ export const getChanges = ({ repositoryId, branch, mappings }) =>
 
       const promises = {
         tenant: getTenant(repositoryId, branch, files),
-        rules: getRules(repositoryId, branch, files),
+        rules: getHooksOrRules(repositoryId, branch, files, constants.RULES_DIRECTORY),
+        hooks: getHooksOrRules(repositoryId, branch, files, constants.HOOKS_DIRECTORY),
         databases: getDatabaseData(repositoryId, branch, files),
         emailProvider: getEmailProvider(repositoryId, branch, files),
         emailTemplates: getHtmlTemplates(repositoryId, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),

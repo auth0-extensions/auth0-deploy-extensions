@@ -113,6 +113,7 @@ const getTree = (projectId, branch) => {
   const promises = {
     tenant: getTreeByPath(projectId, branch, ''),
     rules: getTreeByPath(projectId, branch, constants.RULES_DIRECTORY),
+    hooks: getTreeByPath(projectId, branch, constants.HOOKS_DIRECTORY),
     databases: getDBConnectionsTree(projectId, branch),
     emails: getTreeByPath(projectId, branch, constants.EMAIL_TEMPLATES_DIRECTORY),
     guardianFactors: getTreeByPath(projectId, branch, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
@@ -131,6 +132,7 @@ const getTree = (projectId, branch) => {
     .then((result) => (_.union(
       result.tenant,
       result.rules,
+      result.hooks,
       result.databases,
       result.emails,
       result.guardianFactors,
@@ -219,8 +221,8 @@ const downloadConfigurable = (projectId, branch, itemName, item) => {
 /*
  * Determine if we have the script, the metadata or both.
  */
-const getRules = (projectId, branch, files) => {
-  const rules = utils.getRulesFiles(files);
+const getHooksOrRules = (projectId, branch, files, dir) => {
+  const rules = utils.getHooksOrRulesFiles(files, dir);
 
   // Download all rules.
   return Promise.map(Object.keys(rules), (ruleName) =>
@@ -339,7 +341,8 @@ export const getChanges = ({ projectId, branch, mappings }) =>
 
       const promises = {
         tenant: getTenant(projectId, branch, files),
-        rules: getRules(projectId, branch, files),
+        rules: getHooksOrRules(projectId, branch, files, constants.RULES_DIRECTORY),
+        hooks: getHooksOrRules(projectId, branch, files, constants.HOOKS_DIRECTORY),
         databases: getDatabaseData(projectId, branch, files),
         emailProvider: getEmailProvider(projectId, branch, files),
         emailTemplates: getHtmlTemplates(projectId, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),

@@ -129,8 +129,8 @@ const downloadRule = (repository, branch, ruleName, rule) => {
 /*
  * Determine if we have the script, the metadata or both.
  */
-const getRules = (repository, branch, files) => {
-  const rules = utils.getRulesFiles(files);
+const getHooksOrRules = (repository, branch, files, dir) => {
+  const rules = utils.getHooksOrRulesFiles(files, dir);
 
   // Download all rules.
   return Promise.map(Object.keys(rules), (ruleName) =>
@@ -288,7 +288,8 @@ export const getChanges = ({ repository, branch, sha, mappings }) =>
       })), null, 2)}`);
 
       const promises = {
-        rules: getRules(repository, branch, files),
+        rules: getHooksOrRules(repository, branch, files, constants.RULES_DIRECTORY),
+        hooks: getHooksOrRules(repository, branch, files, constants.HOOKS_DIRECTORY),
         tenant: getTenant(repository, branch, files),
         databases: getDatabaseData(repository, branch, files),
         emailProvider: getEmailProvider(repository, branch, files),

@@ -114,7 +114,7 @@ See Custom Pages configuration [here](https://auth0.com/docs/extensions/bitbucke
 
 ### Local Development
 
-First create a `Client` in your account with `read:connections` and `read/create/update/delete:rules` access to the Auth0 Management API. Then create a `config.json` file under `./server/` containing the following settings:
+First create a machine-machine `Application` in your tenant all scopes selected for the Auth0 Management API. Then create a `config.json` file under `./server/` containing the following settings:
 
 ```json
 {
