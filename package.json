@@ -31,7 +31,7 @@
     "externals": [
       "auth0@2.23.0",
       "async@2.1.2",
-      "auth0-extension-tools@1.4.0",
+      "auth0-extension-tools@1.4.5",
       "auth0-source-control-extension-tools@4.0.3",
       "axios@0.18.0",
       "bluebird@3.4.6",
@@ -81,8 +81,8 @@
   "dependencies": {
     "async": "2.1.2",
     "auth0": "^2.23.0",
-    "auth0-extension-express-tools": "^2.0.0",
-    "auth0-extension-tools": "1.4.0",
+    "auth0-extension-express-tools": "^2.0.1",
+    "auth0-extension-tools": "1.4.5",
     "auth0-extension-ui": "^1.0.1",
     "auth0-oauth2-express": "^1.1.8",
     "auth0-source-control-extension-tools": "4.0.3",
