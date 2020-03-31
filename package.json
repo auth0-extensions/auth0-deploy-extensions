@@ -31,7 +31,6 @@
     "externals": [
       "auth0@2.23.0",
       "async@2.1.2",
-      "auth0-extension-tools@1.4.5",
       "auth0-source-control-extension-tools@4.0.3",
       "axios@0.18.0",
       "bluebird@3.4.6",
