@@ -90,7 +90,11 @@ module.exports = (configProvider, storageProvider) => {
       'update:guardian_factors',
       'read:email_templates',
       'create:email_templates',
-      'update:email_templates'
+      'update:email_templates',
+      'read:hooks',
+      'update:hooks',
+      'delete:hooks',
+      'create:hooks'
     ].join(' ')
   }));
 
