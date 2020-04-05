@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import path from 'path';
-import axios from 'axios';
 import Promise from 'bluebird';
 import { Octokit } from '@octokit/rest';
 import { constants } from 'auth0-source-control-extension-tools';
@@ -25,18 +24,12 @@ _.chain(commits)
 /*
  * Get tree.
  */
-const getTree = (repository, branch, sha) =>
+const getTree = (github, repository, branch, sha) =>
   new Promise((resolve, reject) => {
     try {
       logger.log('Repository: ', repository);
       logger.log('Branch: ', branch);
       logger.log('Sha: ', sha);
-
-      const github = new Octokit({
-        auth: config('TOKEN'),
-        userAgent: 'Auth0 Github Deploy Extension',
-        baseUrl: config('BASE_URL')
-      });
 
       const { user, repo } = utils.parseRepo(repository);
       github.git.getTree({ owner: user, repo, tree_sha: sha || branch, recursive: true }).then(({ data }) => {
@@ -60,35 +53,28 @@ const getTree = (repository, branch, sha) =>
 /*
  * Download a single file.
  */
-const downloadFile = (repository, branch, file) => {
-  const token = config('TOKEN');
-  const host = config('HOST') || 'api.github.com';
-  const pathPrefix = host !== 'api.github.com' ? config('API_PATH') || '/api/v3' : '';
-  const url = `https://${token}:x-oauth-basic@${host}${pathPrefix}/repos/${repository}/git/blobs/${file.sha}`;
+const downloadFile = (github, repository, branch, file) => {
+  const { user, repo } = utils.parseRepo(repository);
 
-  return axios({ url, headers: { 'user-agent': 'auth0-github-deploy' } })
-    .then((response) => {
-      logger.debug(`Downloaded ${file.path} (${file.sha})`);
-
-      const blob = response.data;
-
-      return {
-        fileName: file.path,
-        contents: (Buffer.from(blob.content, 'base64')).toString()
-      };
-    })
-    .catch(err => {
-      logger.error(`Error downloading '${host}${pathPrefix}/repos/${repository}/git/blobs/${file.sha}'`);
-      logger.error(err);
-
-      throw err;
-    });
+  return github.git.getBlob({
+    owner: user,
+    file_sha: file.sha,
+    repo
+  }).then(({ data }) => ({
+    fileName: file.path,
+    contents: data.content
+  })
+  ).catch(err => {
+    logger.error(`Error downloading '${file.sha}'`);
+    logger.error(err);
+    throw err;
+  });
 };
 
 /*
  * Download a single rule with its metadata.
  */
-const downloadRule = (repository, branch, ruleName, rule) => {
+const downloadRule = (github, repository, branch, ruleName, rule) => {
   const currentRule = {
     script: false,
     metadata: false,
@@ -98,7 +84,7 @@ const downloadRule = (repository, branch, ruleName, rule) => {
   const downloads = [];
 
   if (rule.script) {
-    downloads.push(downloadFile(repository, branch, rule.scriptFile)
+    downloads.push(downloadFile(github, repository, branch, rule.scriptFile)
       .then(file => {
         currentRule.script = true;
         currentRule.scriptFile = file.contents;
@@ -106,7 +92,7 @@ const downloadRule = (repository, branch, ruleName, rule) => {
   }
 
   if (rule.metadata) {
-    downloads.push(downloadFile(repository, branch, rule.metadataFile)
+    downloads.push(downloadFile(github, repository, branch, rule.metadataFile)
       .then(file => {
         currentRule.metadata = true;
         currentRule.metadataFile = file.contents;
@@ -120,18 +106,18 @@ const downloadRule = (repository, branch, ruleName, rule) => {
 /*
  * Determine if we have the script, the metadata or both.
  */
-const getHooksOrRules = (repository, branch, files, dir) => {
+const getHooksOrRules = (github, repository, branch, files, dir) => {
   const rules = utils.getHooksOrRulesFiles(files, dir);
 
   // Download all rules.
   return Promise.map(Object.keys(rules), (ruleName) =>
-    downloadRule(repository, branch, ruleName, rules[ruleName]), { concurrency: 2 });
+    downloadRule(github, repository, branch, ruleName, rules[ruleName]), { concurrency: 2 });
 };
 
 /*
  * Download a single database script.
  */
-const downloadDatabaseScript = (repository, branch, databaseName, scripts) => {
+const downloadDatabaseScript = (github, repository, branch, databaseName, scripts) => {
   const database = {
     name: databaseName,
     scripts: []
@@ -139,7 +125,7 @@ const downloadDatabaseScript = (repository, branch, databaseName, scripts) => {
 
   const downloads = [];
   scripts.forEach(script => {
-    downloads.push(downloadFile(repository, branch, script)
+    downloads.push(downloadFile(github, repository, branch, script)
       .then(file => {
         if (script.name === 'settings') {
           database.settings = file.contents;
@@ -160,18 +146,18 @@ const downloadDatabaseScript = (repository, branch, databaseName, scripts) => {
 /*
  * Get all database scripts.
  */
-const getDatabaseData = (repository, branch, files) => {
+const getDatabaseData = (github, repository, branch, files) => {
   const databases = utils.getDatabaseFiles(files);
 
   return Promise.map(Object.keys(databases), (databaseName) =>
-      downloadDatabaseScript(repository, branch, databaseName, databases[databaseName]),
+      downloadDatabaseScript(github, repository, branch, databaseName, databases[databaseName]),
     { concurrency: 2 });
 };
 
 /*
  * Download a single page or email script.
  */
-const downloadTemplate = (repository, branch, tplName, template, shaToken) => {
+const downloadTemplate = (github, repository, branch, tplName, template, shaToken) => {
   const downloads = [];
   const currentPage = {
     metadata: false,
@@ -179,14 +165,14 @@ const downloadTemplate = (repository, branch, tplName, template, shaToken) => {
   };
 
   if (template.file) {
-    downloads.push(downloadFile(repository, branch, template.file, shaToken)
+    downloads.push(downloadFile(github, repository, branch, template.file, shaToken)
       .then(file => {
         currentPage.htmlFile = file.contents;
       }));
   }
 
   if (template.meta_file) {
-    downloads.push(downloadFile(repository, branch, template.meta_file, shaToken)
+    downloads.push(downloadFile(github, repository, branch, template.meta_file, shaToken)
       .then(file => {
         currentPage.metadata = true;
         currentPage.metadataFile = file.contents;
@@ -199,7 +185,7 @@ const downloadTemplate = (repository, branch, tplName, template, shaToken) => {
 /*
  * Download a single configurable file.
  */
-const downloadConfigurable = (repository, branch, itemName, item) => {
+const downloadConfigurable = (github, repository, branch, itemName, item) => {
   const downloads = [];
   const currentItem = {
     metadata: false,
@@ -207,14 +193,14 @@ const downloadConfigurable = (repository, branch, itemName, item) => {
   };
 
   if (item.configFile) {
-    downloads.push(downloadFile(repository, branch, item.configFile)
+    downloads.push(downloadFile(github, repository, branch, item.configFile)
       .then(file => {
         currentItem.configFile = file.contents;
       }));
   }
 
   if (item.metadataFile) {
-    downloads.push(downloadFile(repository, branch, item.metadataFile)
+    downloads.push(downloadFile(github, repository, branch, item.metadataFile)
       .then(file => {
         currentItem.metadata = true;
         currentItem.metadataFile = file.contents;
@@ -227,19 +213,20 @@ const downloadConfigurable = (repository, branch, itemName, item) => {
 /*
  * Get all html templates - emails/pages.
  */
-const getHtmlTemplates = (repository, branch, files, dir, allowedNames) => {
+const getHtmlTemplates = (github, repository, branch, files, dir, allowedNames) => {
   const templates = utils.getTplFiles(files, dir, allowedNames);
 
   return Promise.map(Object.keys(templates), (tplName) =>
-    downloadTemplate(repository, branch, tplName, templates[tplName]), { concurrency: 2 });
+    downloadTemplate(github, repository, branch, tplName, templates[tplName]), { concurrency: 2 });
 };
 
 
 /*
  * Get email provider.
  */
-const getEmailProvider = (repository, branch, files) =>
+const getEmailProvider = (github, repository, branch, files) =>
   downloadConfigurable(
+    github,
     repository,
     branch,
     'emailProvider',
@@ -249,8 +236,9 @@ const getEmailProvider = (repository, branch, files) =>
 /*
  * Get tenant settings.
  */
-const getTenant = (repository, branch, files) =>
+const getTenant = (github, repository, branch, files) =>
   downloadConfigurable(
+    github,
     repository,
     branch,
     'tenant',
@@ -260,18 +248,23 @@ const getTenant = (repository, branch, files) =>
 /*
  * Get all configurables (resource servers / clients).
  */
-const getConfigurables = (repository, branch, files, directory) => {
+const getConfigurables = (github, repository, branch, files, directory) => {
   const configurables = utils.getConfigurablesFiles(files, directory);
 
   return Promise.map(Object.keys(configurables), (key) =>
-    downloadConfigurable(repository, branch, key, configurables[key]), { concurrency: 2 });
+    downloadConfigurable(github, repository, branch, key, configurables[key]), { concurrency: 2 });
 };
 
 /*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
-export const getChanges = ({ repository, branch, sha, mappings }) =>
-  getTree(repository, branch, sha)
+export const getChanges = ({ repository, branch, sha, mappings }) => {
+  const github = new Octokit({
+    auth: config('TOKEN'),
+    userAgent: 'Auth0 Github Deploy Extension',
+    baseUrl: config('BASE_URL')
+  });
+  return getTree(github, repository, branch, sha)
     .then(files => {
       logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
         path: file.path,
@@ -279,26 +272,27 @@ export const getChanges = ({ repository, branch, sha, mappings }) =>
       })), null, 2)}`);
 
       const promises = {
-        rules: getHooksOrRules(repository, branch, files, constants.RULES_DIRECTORY),
-        hooks: getHooksOrRules(repository, branch, files, constants.HOOKS_DIRECTORY),
-        tenant: getTenant(repository, branch, files),
-        databases: getDatabaseData(repository, branch, files),
-        emailProvider: getEmailProvider(repository, branch, files),
-        emailTemplates: getHtmlTemplates(repository, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
-        guardianFactors: getConfigurables(repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
-        guardianFactorTemplates: getConfigurables(repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
-        guardianFactorProviders: getConfigurables(repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
-        pages: getHtmlTemplates(repository, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
-        roles: getConfigurables(repository, branch, files, constants.ROLES_DIRECTORY),
-        clients: getConfigurables(repository, branch, files, constants.CLIENTS_DIRECTORY),
-        clientGrants: getConfigurables(repository, branch, files, constants.CLIENTS_GRANTS_DIRECTORY),
-        connections: getConfigurables(repository, branch, files, constants.CONNECTIONS_DIRECTORY),
-        rulesConfigs: getConfigurables(repository, branch, files, constants.RULES_CONFIGS_DIRECTORY),
-        resourceServers: getConfigurables(repository, branch, files, constants.RESOURCE_SERVERS_DIRECTORY)
+        rules: getHooksOrRules(github, repository, branch, files, constants.RULES_DIRECTORY),
+        hooks: getHooksOrRules(github, repository, branch, files, constants.HOOKS_DIRECTORY),
+        tenant: getTenant(github, repository, branch, files),
+        databases: getDatabaseData(github, repository, branch, files),
+        emailProvider: getEmailProvider(github, repository, branch, files),
+        emailTemplates: getHtmlTemplates(github, repository, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+        guardianFactors: getConfigurables(github, repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
+        guardianFactorTemplates: getConfigurables(github, repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
+        guardianFactorProviders: getConfigurables(github, repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
+        pages: getHtmlTemplates(github, repository, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
+        roles: getConfigurables(github, repository, branch, files, constants.ROLES_DIRECTORY),
+        clients: getConfigurables(github, repository, branch, files, constants.CLIENTS_DIRECTORY),
+        clientGrants: getConfigurables(github, repository, branch, files, constants.CLIENTS_GRANTS_DIRECTORY),
+        connections: getConfigurables(github, repository, branch, files, constants.CONNECTIONS_DIRECTORY),
+        rulesConfigs: getConfigurables(github, repository, branch, files, constants.RULES_CONFIGS_DIRECTORY),
+        resourceServers: getConfigurables(github, repository, branch, files, constants.RESOURCE_SERVERS_DIRECTORY)
       };
 
       return Promise.props(promises)
         .then((result) => utils.unifyData(result, mappings));
     });
+};
 
 export const getOptions = utils.getOptions;

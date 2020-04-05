@@ -32,7 +32,7 @@ const generateTree = () => {
 
       nock('https://test.gh')
         .get(`/api/repos/test/repo/git/blobs/${sha}`)
-        .reply(200, { content: Buffer.from(content) });
+        .reply(200, { content });
     } else {
       for (let j = 0; j < items.length; j++) {
         const name = items[j];
@@ -43,7 +43,7 @@ const generateTree = () => {
 
         nock('https://test.gh')
           .get(`/api/repos/test/repo/git/blobs/${sha}`)
-          .reply(200, { content: Buffer.from(content) });
+          .reply(200, { content });
       }
     }
   }
