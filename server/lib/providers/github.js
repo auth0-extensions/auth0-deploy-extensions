@@ -33,27 +33,24 @@ const getTree = (repository, branch, sha) =>
       logger.log('Sha: ', sha);
 
       const github = new Octokit({
-        auth: config("TOKEN"),
-        userAgent: "Auth0 Github Deploy Extension",
-        baseUrl: config("BASE_URL"),
+        auth: config('TOKEN'),
+        userAgent: 'Auth0 Github Deploy Extension',
+        baseUrl: config('BASE_URL')
       });
 
       const { user, repo } = utils.parseRepo(repository);
-      github.git.getTree({ user, repo, sha: sha || branch, recursive: true },
-        (err, res) => {
-          if (err) {
-            return reject(err);
-          }
-
-          try {
-            const files = res.tree
-              .filter(f => f.type === 'blob')
-              .filter(f => utils.validFilesOnly(f.path));
-            return resolve(files);
-          } catch (mappingError) {
-            return reject(mappingError);
-          }
-        });
+      github.git.getTree({ owner: user, repo, tree_sha: sha || branch, recursive: true }).then(({ data }) => {
+        try {
+          const files = data.tree
+            .filter(f => f.type === 'blob')
+            .filter(f => utils.validFilesOnly(f.path));
+          return resolve(files);
+        } catch (mappingError) {
+          return reject(mappingError);
+        }
+      }).catch(err => {
+        return reject(err);
+      });
     } catch (e) {
       logger.error(e);
       reject(e);

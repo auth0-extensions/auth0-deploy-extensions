@@ -108,22 +108,20 @@ describe('github', () => {
   });
 
   describe('getChanges', () => {
-    it.only('should get and format files', (done) => {
-      nock.recorder.rec();
-
+    it.only('should get and format files', async () => {
       const repo = { tree: generateTree() };
 
-      nock('https://test.gh')
-        .get('/api/repos/test/repo/git/trees/sha?recursive=true&access_token=secret_token')
+      const scope = nock('https://test.gh', {
+        reqheaders: {
+          authorization: `token ${defaultConfig.TOKEN}`
+        }
+      })
+        .get('/api/repos/test/repo/git/trees/sha?recursive=true')
         .reply(200, repo);
 
-      getChanges({ repository: 'test/repo', branch: 'branch', sha: 'sha' })
-        .then(results => {
-          expect(results).toEqual(expectedResults);
-
-          done();
-        })
-        .catch(done);
+      const results = await getChanges({ repository: 'test/repo', branch: 'branch', sha: 'sha' });
+      expect(results).toEqual(expectedResults);
+      scope.done();
     });
   });
 });
