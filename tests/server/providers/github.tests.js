@@ -12,8 +12,7 @@ const defaultConfig = {
   BRANCH: 'master',
   TOKEN: 'secret_token',
   BASE_DIR: 'tenant',
-  HOST: 'test.gh',
-  API_PATH: '/api'
+  BASE_URL: 'https://test.gh/api'
 };
 
 const generateTree = () => {
@@ -33,7 +32,7 @@ const generateTree = () => {
 
       nock('https://test.gh')
         .get(`/api/repos/test/repo/git/blobs/${sha}`)
-        .reply(200, { content: new Buffer(content) });
+        .reply(200, { content: Buffer.from(content) });
     } else {
       for (let j = 0; j < items.length; j++) {
         const name = items[j];
@@ -44,7 +43,7 @@ const generateTree = () => {
 
         nock('https://test.gh')
           .get(`/api/repos/test/repo/git/blobs/${sha}`)
-          .reply(200, { content: new Buffer(content) });
+          .reply(200, { content: Buffer.from(content) });
       }
     }
   }
@@ -109,7 +108,9 @@ describe('github', () => {
   });
 
   describe('getChanges', () => {
-    it('should get and format files', (done) => {
+    it.only('should get and format files', (done) => {
+      nock.recorder.rec();
+
       const repo = { tree: generateTree() };
 
       nock('https://test.gh')

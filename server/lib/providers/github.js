@@ -2,7 +2,7 @@ import _ from 'lodash';
 import path from 'path';
 import axios from 'axios';
 import Promise from 'bluebird';
-import GitHubApi from 'github';
+import { Octokit } from '@octokit/rest';
 import { constants } from 'auth0-source-control-extension-tools';
 
 import config from '../config';
@@ -32,20 +32,14 @@ const getTree = (repository, branch, sha) =>
       logger.log('Branch: ', branch);
       logger.log('Sha: ', sha);
 
-      const host = config('HOST') || 'api.github.com';
-      const pathPrefix = host !== 'api.github.com' ? config('API_PATH') || '/api/v3' : '';
-      const github = new GitHubApi({
-        version: '3.0.0',
-        host,
-        pathPrefix
-      });
-      github.authenticate({
-        type: 'oauth',
-        token: config('TOKEN')
+      const github = new Octokit({
+        auth: config("TOKEN"),
+        userAgent: "Auth0 Github Deploy Extension",
+        baseUrl: config("BASE_URL"),
       });
 
       const { user, repo } = utils.parseRepo(repository);
-      github.gitdata.getTree({ user, repo, sha: sha || branch, recursive: true },
+      github.git.getTree({ user, repo, sha: sha || branch, recursive: true },
         (err, res) => {
           if (err) {
             return reject(err);
@@ -83,7 +77,7 @@ const downloadFile = (repository, branch, file) => {
 
       return {
         fileName: file.path,
-        contents: (new Buffer(blob.content, 'base64')).toString()
+        contents: (Buffer.from(blob.content, 'base64')).toString()
       };
     })
     .catch(err => {
