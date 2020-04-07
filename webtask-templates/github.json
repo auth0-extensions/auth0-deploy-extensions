@@ -1,7 +1,7 @@
 {
   "title": "GitHub Deployments",
   "name": "auth0-github-deploy",
-  "version": "3.2.1",
+  "version": "4.0.0",
   "preVersion": "2.10.0",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Pages, Rules and Custom Database Connections from GitHub.",
@@ -29,13 +29,9 @@
       "default": "master",
       "required": true
     },
-    "HOST": {
-      "description": "GitHub Enterprise host, leave empty for github.com",
-      "example": "github.my-company.com"
-    },
-    "API_PATH": {
-      "description": "GitHub Enterprise API path prefix, leave empty for github.com",
-      "example": "/api/v3"
+    "BASE_URL": {
+      "description": "GitHub Enterprise base url, leave empty for github.com",
+      "example": "https://github.my-company.com/api/v3"
     },
     "TOKEN": {
       "description": "Your personal access token for GitHub",
