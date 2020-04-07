@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### auth0-bitbucket-deploy v3.3.0
-### auth0-github-deploy v3.3.0
+### auth0-github-deploy v4.0.0
 ### auth0-gitlab-deploy v3.3.0
 ### auth0-visualstudio-deploy v3.3.0
 - #### Changed
