@@ -62,7 +62,7 @@ const downloadFile = (github, repository, branch, file) => {
     repo
   }).then(({ data }) => ({
     fileName: file.path,
-    contents: data.content
+    contents: Buffer.from(data.content, data.encoding).toString('utf8')
   })
   ).catch(err => {
     logger.error(`Error downloading '${file.sha}'`);

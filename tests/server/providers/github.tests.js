@@ -32,7 +32,7 @@ const generateTree = () => {
 
       nock('https://test.gh')
         .get(`/api/repos/test/repo/git/blobs/${sha}`)
-        .reply(200, { content });
+        .reply(200, { content: Buffer.from(content) });
     } else {
       for (let j = 0; j < items.length; j++) {
         const name = items[j];
@@ -43,7 +43,7 @@ const generateTree = () => {
 
         nock('https://test.gh')
           .get(`/api/repos/test/repo/git/blobs/${sha}`)
-          .reply(200, { content });
+          .reply(200, { content: Buffer.from(content) });
       }
     }
   }
@@ -108,7 +108,7 @@ describe('github', () => {
   });
 
   describe('getChanges', () => {
-    it.only('should get and format files', async () => {
+    it('should get and format files', async () => {
       const repo = { tree: generateTree() };
 
       const scope = nock('https://test.gh', {
