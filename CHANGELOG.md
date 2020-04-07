@@ -12,10 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### auth0-visualstudio-deploy v3.3.0
 - #### Changed
   - Update the github internal library to prevent deprecated access token in url warnings from Github.
-
-## Unreleased
-
-- #### Changed
   - For SAML database connections, support client name in the `options.idpinitiated.client_id` property.
 
 ## [3.2.1] - 2020-04-02
