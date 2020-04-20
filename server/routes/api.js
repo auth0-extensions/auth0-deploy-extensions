@@ -5,6 +5,7 @@ import excludes from './excludes';
 import mappings from './mappings';
 import deploy from '../lib/deploy';
 import config from '../lib/config';
+import { version as packageVersion } from '../../package.json';
 
 const { getOptions } = require(`../lib/providers/${process.env.A0EXT_PROVIDER}`);
 
@@ -22,7 +23,10 @@ export default (storage) => {
   api.use(middlewares.managementApiClient({
     domain: config('AUTH0_DOMAIN'),
     clientId: config('AUTH0_CLIENT_ID'),
-    clientSecret: config('AUTH0_CLIENT_SECRET')
+    clientSecret: config('AUTH0_CLIENT_SECRET'),
+    headers: {
+      'User-agent': `${process.env.A0EXT_PROVIDER}-deploy-ext/${packageVersion} (node.js/${process.version.replace('v', '')})`
+    }
   }));
 
   api.use('/excludes', excludes(storage));

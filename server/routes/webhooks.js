@@ -3,6 +3,7 @@ import { middlewares } from 'auth0-extension-express-tools';
 
 import config from '../lib/config';
 import deploy from '../lib/deploy';
+import { version as packageVersion } from '../../package.json';
 
 const middleware = require(`../lib/middlewares/${process.env.A0EXT_PROVIDER}`);
 
@@ -11,7 +12,10 @@ export default (storage) => {
   webhooks.use(middlewares.managementApiClient({
     domain: config('AUTH0_DOMAIN'),
     clientId: config('AUTH0_CLIENT_ID'),
-    clientSecret: config('AUTH0_CLIENT_SECRET')
+    clientSecret: config('AUTH0_CLIENT_SECRET'),
+    headers: {
+      'User-agent': `${process.env.A0EXT_PROVIDER}-deploy-ext/${packageVersion} (node.js/${process.version.replace('v', '')})`
+    }
   }));
 
   webhooks.post('/deploy/:secret?', middleware(), (req, res) => {
