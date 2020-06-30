@@ -188,6 +188,15 @@ module.exports = {
       verification_message: 'test verification {{ code }}'
     }
   ],
+  guardianPhoneFactorMessageTypes: {
+    message_types: [ 'sms', 'voice' ]
+  },
+  guardianPhoneFactorSelectedProvider: {
+    provider: 'twilio'
+  },
+  guardianPolicies: {
+    policies: [ 'all-applications' ]
+  },
   tenant: {
     friendly_name: 'My Company',
     support_email: 'support@company.com',

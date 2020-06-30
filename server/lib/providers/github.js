@@ -220,30 +220,13 @@ const getHtmlTemplates = (github, repository, branch, files, dir, allowedNames) 
     downloadTemplate(github, repository, branch, tplName, templates[tplName]), { concurrency: 2 });
 };
 
-
 /*
- * Get email provider.
+ * Downloads a configurable by exact path.
  */
-const getEmailProvider = (github, repository, branch, files) =>
-  downloadConfigurable(
-    github,
-    repository,
-    branch,
-    'emailProvider',
-    { configFile: _.find(files, f => utils.isEmailProvider(f.path)) }
-    );
-
-/*
- * Get tenant settings.
- */
-const getTenant = (github, repository, branch, files) =>
-  downloadConfigurable(
-    github,
-    repository,
-    branch,
-    'tenant',
-    { configFile: _.find(files, f => utils.isTenantFile(f.path)) }
-    );
+const getConfigurableByPath = (github, repository, branch, files, name, filePath) => {
+  const file = { configFile: utils.findFileByPath(files, filePath) };
+  return downloadConfigurable(github, repository, branch, name, file);
+};
 
 /*
  * Get all configurables (resource servers / clients).
@@ -274,13 +257,16 @@ export const getChanges = ({ repository, branch, sha, mappings }) => {
       const promises = {
         rules: getHooksOrRules(github, repository, branch, files, constants.RULES_DIRECTORY),
         hooks: getHooksOrRules(github, repository, branch, files, constants.HOOKS_DIRECTORY),
-        tenant: getTenant(github, repository, branch, files),
+        tenant: getConfigurableByPath(github, repository, branch, files, 'tenant', 'tenant.json'),
         databases: getDatabaseData(github, repository, branch, files),
-        emailProvider: getEmailProvider(github, repository, branch, files),
+        emailProvider: getConfigurableByPath(github, repository, branch, files, 'emailProvider', path.join(constants.EMAIL_TEMPLATES_DIRECTORY, 'provider.json')),
         emailTemplates: getHtmlTemplates(github, repository, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
         guardianFactors: getConfigurables(github, repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
         guardianFactorTemplates: getConfigurables(github, repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
         guardianFactorProviders: getConfigurables(github, repository, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
+        guardianPhoneFactorMessageTypes: getConfigurableByPath(github, repository, branch, files, 'guardianPhoneFactorMessageTypes', path.join(constants.GUARDIAN_DIRECTORY, 'phoneFactorMessageTypes.json')),
+        guardianPhoneFactorSelectedProvider: getConfigurableByPath(github, repository, branch, files, 'guardianPhoneFactorSelectedProvider', path.join(constants.GUARDIAN_DIRECTORY, 'phoneFactorSelectedProvider.json')),
+        guardianPolicies: getConfigurableByPath(github, repository, branch, files, 'guardianPolicies', path.join(constants.GUARDIAN_DIRECTORY, 'policies.json')),
         pages: getHtmlTemplates(github, repository, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
         roles: getConfigurables(github, repository, branch, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(github, repository, branch, files, constants.CLIENTS_DIRECTORY),

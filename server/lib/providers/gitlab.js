@@ -116,6 +116,7 @@ const getTree = (projectId, branch) => {
     hooks: getTreeByPath(projectId, branch, constants.HOOKS_DIRECTORY),
     databases: getDBConnectionsTree(projectId, branch),
     emails: getTreeByPath(projectId, branch, constants.EMAIL_TEMPLATES_DIRECTORY),
+    guardian: getTreeByPath(projectId, branch, constants.GUARDIAN_DIRECTORY),
     guardianFactors: getTreeByPath(projectId, branch, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
     guardianFactorTemplates: getTreeByPath(projectId, branch, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
     guardianFactorProviders: getTreeByPath(projectId, branch, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
@@ -135,6 +136,7 @@ const getTree = (projectId, branch) => {
       result.hooks,
       result.databases,
       result.emails,
+      result.guardian,
       result.guardianFactors,
       result.guardianFactorTemplates,
       result.guardianFactorProviders,
@@ -230,6 +232,14 @@ const getHooksOrRules = (projectId, branch, files, dir) => {
 };
 
 /*
+ * Downloads a configurable by exact path.
+ */
+const getConfigurableByPath = (projectId, branch, files, name, filePath) => {
+  const file = { configFile: utils.findFileByPath(files, filePath) };
+  return downloadConfigurable(projectId, branch, name, file);
+};
+
+/*
  * Get all configurables from certain directory.
  */
 const getConfigurables = (projectId, branch, files, directory) => {
@@ -320,18 +330,6 @@ const getHtmlTemplates = (projectId, branch, files, dir, allowedNames) => {
 };
 
 /*
- * Get tenant settings.
- */
-const getTenant = (projectId, branch, files) =>
-  downloadConfigurable(projectId, branch, 'tenant', { configFile: _.find(files, f => utils.isTenantFile(f.path)) });
-
-/*
- * Get email provider.
- */
-const getEmailProvider = (projectId, branch, files) =>
-  downloadConfigurable(projectId, branch, 'emailProvider', { configFile: _.find(files, f => utils.isEmailProvider(f.path)) });
-
-/*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
 export const getChanges = ({ projectId, branch, mappings }) =>
@@ -340,15 +338,18 @@ export const getChanges = ({ projectId, branch, mappings }) =>
       logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({ name: file.path, id: file.id })), null, 2)}`);
 
       const promises = {
-        tenant: getTenant(projectId, branch, files),
+        tenant: getConfigurableByPath(projectId, branch, files, 'tenant', 'tenant.json'),
         rules: getHooksOrRules(projectId, branch, files, constants.RULES_DIRECTORY),
         hooks: getHooksOrRules(projectId, branch, files, constants.HOOKS_DIRECTORY),
         databases: getDatabaseData(projectId, branch, files),
-        emailProvider: getEmailProvider(projectId, branch, files),
+        emailProvider: getConfigurableByPath(projectId, branch, files, 'emailProvider', path.join(constants.EMAIL_TEMPLATES_DIRECTORY, 'provider.json')),
         emailTemplates: getHtmlTemplates(projectId, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
         guardianFactors: getConfigurables(projectId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
         guardianFactorTemplates: getConfigurables(projectId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
         guardianFactorProviders: getConfigurables(projectId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
+        guardianPhoneFactorMessageTypes: getConfigurableByPath(projectId, branch, files, 'guardianPhoneFactorMessageTypes', path.join(constants.GUARDIAN_DIRECTORY, 'phoneFactorMessageTypes.json')),
+        guardianPhoneFactorSelectedProvider: getConfigurableByPath(projectId, branch, files, 'guardianPhoneFactorSelectedProvider', path.join(constants.GUARDIAN_DIRECTORY, 'phoneFactorSelectedProvider.json')),
+        guardianPolicies: getConfigurableByPath(projectId, branch, files, 'guardianPolicies', path.join(constants.GUARDIAN_DIRECTORY, 'policies.json')),
         pages: getHtmlTemplates(projectId, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
         roles: getConfigurables(projectId, branch, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(projectId, branch, files, constants.CLIENTS_DIRECTORY),

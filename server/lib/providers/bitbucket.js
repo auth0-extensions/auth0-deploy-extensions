@@ -111,6 +111,7 @@ const getTree = (parsedRepo, branch, sha) => {
     pages: getTreeByDir(params, constants.PAGES_DIRECTORY),
     roles: getTreeByDir(params, constants.ROLES_DIRECTORY),
     emails: getTreeByDir(params, constants.EMAIL_TEMPLATES_DIRECTORY),
+    guardian: getTreeByDir(params, constants.GUARDIAN_DIRECTORY),
     guardianFactors: getTreeByDir(params, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
     guardianFactorTemplates: getTreeByDir(params, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
     guardianFactorProviders: getTreeByDir(params, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
@@ -127,6 +128,7 @@ const getTree = (parsedRepo, branch, sha) => {
       result.databases,
       result.tenant,
       result.emails,
+      result.guardian,
       result.guardianFactors,
       result.guardianFactorTemplates,
       result.guardianFactorProviders,
@@ -234,28 +236,19 @@ const getHooksOrRules = (parsedRepo, branch, files, shaToken, dir) => {
 };
 
 /*
- * Try to download tenant settings.
+ * Downloads a configurable by exact path.
  */
-const getTenant = (parsedRepo, branch, files, shaToken) => {
-  const tenantFile = { configFile: _.find(files, f => utils.isTenantFile(f.path)) };
-  return downloadConfigurable(parsedRepo, branch, 'tenant', tenantFile, shaToken);
+const getConfigurableByPath = (parsedRepo, branch, files, shaToken, name, filePath) => {
+  const file = { configFile: utils.findFileByPath(files, filePath) };
+  return downloadConfigurable(parsedRepo, branch, name, file, shaToken);
 };
 
 /*
- * Get email provider.
- */
-const getEmailProvider = (parsedRepo, branch, files, shaToken) => {
-  const providerFile = { configFile: _.find(files, f => utils.isEmailProvider(f.path)) };
-  return downloadConfigurable(parsedRepo, branch, 'emailProvider', providerFile, shaToken);
-};
-
-/*
- * Determine if we have the script, the metadata or both.
+ * Downloads all configurables under a certain directory.
  */
 const getConfigurables = (parsedRepo, branch, files, shaToken, directory) => {
   const configurables = utils.getConfigurablesFiles(files, directory);
 
-  // Download all rules.
   return Promise.map(Object.keys(configurables), (key) =>
     downloadConfigurable(parsedRepo, branch, key, configurables[key], shaToken), { concurrency: 2 });
 };
@@ -351,15 +344,18 @@ export function getChanges({ repository, branch, sha, mappings }) {
         })), null, 2)}`);
 
         const promises = {
-          tenant: getTenant(parsedRepo, branch, files, sha),
+          tenant: getConfigurableByPath(parsedRepo, branch, files, sha, 'tenant', 'tenant.json'),
           rules: getHooksOrRules(parsedRepo, branch, files, sha, constants.RULES_DIRECTORY),
           hooks: getHooksOrRules(parsedRepo, branch, files, sha, constants.HOOKS_DIRECTORY),
           databases: getDatabaseData(parsedRepo, branch, files, sha),
-          emailProvider: getEmailProvider(parsedRepo, branch, files, sha),
+          emailProvider: getConfigurableByPath(parsedRepo, branch, files, sha, 'emailProvider', path.join(constants.EMAIL_TEMPLATES_DIRECTORY, 'provider.json')),
           emailTemplates: getHtmlTemplates(parsedRepo, branch, files, sha, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
           guardianFactors: getConfigurables(parsedRepo, branch, files, sha, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
           guardianFactorTemplates: getConfigurables(parsedRepo, branch, files, sha, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
           guardianFactorProviders: getConfigurables(parsedRepo, branch, files, sha, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
+          guardianPhoneFactorMessageTypes: getConfigurableByPath(parsedRepo, branch, files, sha, 'guardianPhoneFactorMessageTypes', path.join(constants.GUARDIAN_DIRECTORY, 'phoneFactorMessageTypes.json')),
+          guardianPhoneFactorSelectedProvider: getConfigurableByPath(parsedRepo, branch, files, sha, 'guardianPhoneFactorSelectedProvider', path.join(constants.GUARDIAN_DIRECTORY, 'phoneFactorSelectedProvider.json')),
+          guardianPolicies: getConfigurableByPath(parsedRepo, branch, files, sha, 'guardianPolicies', path.join(constants.GUARDIAN_DIRECTORY, 'policies.json')),
           pages: getHtmlTemplates(parsedRepo, branch, files, sha, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
           roles: getConfigurables(parsedRepo, branch, files, sha, constants.ROLES_DIRECTORY),
           clients: getConfigurables(parsedRepo, branch, files, sha, constants.CLIENTS_DIRECTORY),
