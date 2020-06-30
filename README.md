@@ -120,16 +120,21 @@ First create a machine-machine `Application` in your tenant all scopes selected 
 {
   "EXTENSION_SECRET": "any-random-value-will-do",
   "SLACK_INCOMING_WEBHOOK_URL": "https://hooks.slack.com/services/...",
-  "BITBUCKET_BRANCH": "YOUR_BRANCH",
-  "BITBUCKET_REPOSITORY": "YOUR_REPO",
-  "BITBUCKET_USER": "",
-  "BITBUCKET_PASSWORD": "",
+  "REPOSITORY": "YOUR_REPO",
+  "BRANCH": "YOUR_BRANCH",
+  "USER": "BITBUCKET_USER",
+  "PASSWORD": "BITBUCKET_PASSWORD",
+  "TOKEN": "GITHUB_OR_GITLAB_TOKEN",
   "AUTH0_DOMAIN": "YOUR_DOMAIN",
   "AUTH0_CLIENT_ID": "YOUR_CLIENT_ID",
   "AUTH0_CLIENT_SECRET": "YOUR_CLIENT_SECRET",
   "AUTH0_SCOPES": "read:client_grants create:client_grants delete:client_grants update:client_grants read:clients update:clients delete:clients create:clients read:client_keys update:client_keys delete:client_keys create:client_keys read:connections update:connections delete:connections create:connections read:resource_servers update:resource_servers delete:resource_servers create:resource_servers read:rules update:rules delete:rules create:rules read:rules_configs update:rules_configs delete:rules_configs read:email_provider update:email_provider delete:email_provider create:email_provider read:tenant_settings update:tenant_settings read:grants delete:grants read:guardian_factors update:guardian_factors read:email_templates create:email_templates update:email_templates read:roles update:roles delete:roles create:roles read:hooks update:hooks delete:hooks create:hooks"
 }
-}
+```
+
+Build the repo at least once:
+```bash
+npm run build
 ```
 
 To run the extension locally:
@@ -141,13 +146,9 @@ A0EXT_PROVIDER=github npm run serve:dev
 
 Replace github with `bitbucket`, `gitlab` or `visualstudio`.
 
-After that you need to use something like `ngrok` to expose the extension (Auth0 needs to reach out to the extension for authentication):
+The command will spin up a development server for this repo, and will also setup an `ngrok` tunnel to expose the extension (Auth0 needs to reach out to the extension for authentication).
 
-```bash
-./ngrok http 3000
-```
-
-Finally you can login to the extension using your Auth0 dashboard account:
+The command will open your browser and navigate to the extension and should ask you to login using your Auth0 dashboard account:
 
 ```
 https://YOU.ngrok.io/login
