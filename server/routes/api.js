@@ -5,6 +5,7 @@ import excludes from './excludes';
 import mappings from './mappings';
 import deploy from '../lib/deploy';
 import config from '../lib/config';
+import multiPartRequest from '../lib/multipartRequest';
 import { version as packageVersion } from '../../package.json';
 
 const { getOptions } = require(`../lib/providers/${process.env.A0EXT_PROVIDER}`);
@@ -52,7 +53,7 @@ export default (storage) => {
           };
         }
 
-        return req.auth0.rules.get()
+        return multiPartRequest(req.auth0, 'rules')
           .then(existingRules => {
             const result = {
               showNotification: false,

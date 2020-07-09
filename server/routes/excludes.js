@@ -1,9 +1,11 @@
 import _ from 'lodash';
 import express from 'express';
 import Promise from 'bluebird';
+import multiPartRequest from '../lib/multipartRequest';
 
 const getExcludes = (type, client, storage) => {
-  const apiClient = type === 'databases' ? client.connections : client[type];
+  const resourceType = type === 'databases' ? 'connections' : type;
+
   const query = {
     rules: { fields: 'name' },
     clients: { is_global: false, fields: 'name' },
@@ -12,11 +14,11 @@ const getExcludes = (type, client, storage) => {
     resourceServers: { fields: 'name,is_system' }
   };
 
-  if (!apiClient || typeof apiClient.get !== 'function') {
+  if (!client[resourceType] || typeof client[resourceType].getAll !== 'function') {
     return Promise.reject(new Error(`Get excluded error: wrong type ${type}`));
   }
 
-  return apiClient.get(query[type])
+  return multiPartRequest(client, resourceType, query[type])
     .then(items =>
       storage.getData()
         .then(data => {
