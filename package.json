@@ -101,7 +101,7 @@
     "ejs": "^2.4.2",
     "expect": "^1.20.2",
     "express": "^4.17.0",
-    "express-jwt": "^3.4.0",
+    "express-jwt": "^6.0.0",
     "gitlab": "3.4.2",
     "glob": "^7.0.5",
     "immutable": "^3.8.1",
