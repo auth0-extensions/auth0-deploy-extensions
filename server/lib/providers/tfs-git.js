@@ -198,7 +198,15 @@ const getHooksOrRules = (repositoryId, branch, files, dir) => {
 };
 
 /*
- * Determine if we have the script, the metadata or both.
+ * Downloads a configurable by exact path.
+ */
+const getConfigurableByPath = (repositoryId, branch, files, name, filePath) => {
+  const file = { configFile: utils.findFileByPath(files, filePath) };
+  return downloadConfigurable(repositoryId, branch, name, file);
+};
+
+/*
+ * Downloads all configurables under a certain directory.
  */
 const getConfigurables = (repositoryId, branch, files, directory) => {
   const configurables = utils.getConfigurablesFiles(files, directory);
@@ -286,19 +294,6 @@ const getHtmlTemplates = (repositoryId, branch, files, dir, allowedNames) => {
 };
 
 /*
- * Get tenant settings.
- */
-const getTenant = (projectId, branch, files) =>
-  downloadConfigurable(projectId, branch, 'tenant', { configFile: _.find(files, f => utils.isTenantFile(f.path)) });
-
-/*
- * Get email provider.
- */
-const getEmailProvider = (projectId, branch, files) =>
-  downloadConfigurable(projectId, branch, 'emailProvider', { configFile: _.find(files, f => utils.isEmailProvider(f.path)) });
-
-
-/*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
 export const getChanges = ({ repositoryId, branch, mappings }) =>
@@ -310,15 +305,18 @@ export const getChanges = ({ repositoryId, branch, mappings }) =>
       })), null, 2)}`);
 
       const promises = {
-        tenant: getTenant(repositoryId, branch, files),
+        tenant: getConfigurableByPath(repositoryId, branch, files, 'tenant', 'tenant.json'),
         rules: getHooksOrRules(repositoryId, branch, files, constants.RULES_DIRECTORY),
         hooks: getHooksOrRules(repositoryId, branch, files, constants.HOOKS_DIRECTORY),
         databases: getDatabaseData(repositoryId, branch, files),
-        emailProvider: getEmailProvider(repositoryId, branch, files),
+        emailProvider: getConfigurableByPath(repositoryId, branch, files, 'emailProvider', path.join(constants.EMAIL_TEMPLATES_DIRECTORY, 'provider.json')),
         emailTemplates: getHtmlTemplates(repositoryId, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
         guardianFactors: getConfigurables(repositoryId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
         guardianFactorTemplates: getConfigurables(repositoryId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
         guardianFactorProviders: getConfigurables(repositoryId, branch, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
+        guardianPhoneFactorMessageTypes: getConfigurableByPath(repositoryId, branch, files, 'guardianPhoneFactorMessageTypes', path.join(constants.GUARDIAN_DIRECTORY, 'phoneFactorMessageTypes.json')),
+        guardianPhoneFactorSelectedProvider: getConfigurableByPath(repositoryId, branch, files, 'guardianPhoneFactorSelectedProvider', path.join(constants.GUARDIAN_DIRECTORY, 'phoneFactorSelectedProvider.json')),
+        guardianPolicies: getConfigurableByPath(repositoryId, branch, files, 'guardianPolicies', path.join(constants.GUARDIAN_DIRECTORY, 'policies.json')),
         pages: getHtmlTemplates(repositoryId, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
         roles: getConfigurables(repositoryId, branch, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(repositoryId, branch, files, constants.CLIENTS_DIRECTORY),

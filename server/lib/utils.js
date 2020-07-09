@@ -18,6 +18,12 @@ const getPrefix = () =>
   (config('TYPE') === 'tfvc' ? config('PROJECT_PATH') : getBaseDir());
 
 /*
+ * Returns the entry in `files` corresponding to `filePath`
+ */
+const findFileByPath = (files, filePath) =>
+  _.find(files, (file) => file.path === path.join(getPrefix(), filePath));
+
+/*
  * Check if a file is part of the rules folder.
  */
 const isHookOrRule = (file, dir) =>
@@ -51,13 +57,20 @@ const isEmailProvider = (file) =>
  * Check if a file is the guardian file.
  */
 const isGuardianFile = (file) => {
+  const fileName = path.basename(file);
+  if (!fileName.endsWith('.json')) {
+    return false;
+  }
+  const dirname = path.dirname(file);
   const guardianDir = path.join(getPrefix(), constants.GUARDIAN_DIRECTORY);
-  const isJSON = file.endsWith('.json');
-  const isGuardian = file.startsWith(path.join(guardianDir, constants.GUARDIAN_FACTORS_DIRECTORY))
-    || file.startsWith(path.join(guardianDir, constants.GUARDIAN_PROVIDERS_DIRECTORY))
-    || file.startsWith(path.join(guardianDir, constants.GUARDIAN_TEMPLATES_DIRECTORY));
+  const validDirectories = [
+    guardianDir,
+    path.join(guardianDir, constants.GUARDIAN_FACTORS_DIRECTORY),
+    path.join(guardianDir, constants.GUARDIAN_PROVIDERS_DIRECTORY),
+    path.join(guardianDir, constants.GUARDIAN_TEMPLATES_DIRECTORY)
+  ];
 
-  return isJSON && isGuardian;
+  return validDirectories.includes(dirname);
 };
 
 /*
@@ -90,7 +103,7 @@ const getDatabaseScriptDetails = (filename) => {
 };
 
 const getDatabaseSettingsDetails = filename => {
-  const supportedDbConfigFiles = ['database.json', 'settings.json'];
+  const supportedDbConfigFiles = [ 'database.json', 'settings.json' ];
 
   if (config('TYPE') === 'tfvc') {
     filename = filename.replace(`${config('PROJECT_PATH')}/`, '');
@@ -323,9 +336,14 @@ const unifyItem = (item, type, mappings) => {
     case 'guardianFactors':
     case 'guardianFactorTemplates':
     case 'guardianFactorProviders':
+    case 'guardianPhoneFactorMessageTypes':
+    case 'guardianPhoneFactorSelectedProvider':
+    case 'guardianPolicies':
     case 'emailProvider': {
       const data = extractFileContent(item.configFile, mappings);
-
+      if (_.isEmpty(data)) {
+        return null;
+      }
       return ({ ...data });
     }
 
@@ -380,7 +398,10 @@ const unifyData = (assets, mappings) => {
         if (unified) result[type].push(unified);
       });
     } else {
-      result[type] = unifyItem(data, type, mappings);
+      const unified = unifyItem(data, type, mappings);
+      if (unified) {
+        result[type] = unified;
+      }
     }
   });
 
@@ -431,12 +452,7 @@ module.exports = {
   unifyData,
   getBaseDir,
   getPrefix,
-  isHookOrRule,
-  isDatabaseConnection,
-  isTemplate,
-  isTenantFile,
-  isGuardianFile,
-  isEmailProvider,
+  findFileByPath,
   isConfigurable,
   getDatabaseFiles,
   getConfigurablesFiles,

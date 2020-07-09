@@ -101,6 +101,17 @@ module.exports = {
   pages: {
     'login.html': 'login page html'
   },
+  guardian: {
+    'phoneFactorMessageTypes.json': {
+      message_types: [ 'sms', 'voice' ]
+    },
+    'phoneFactorSelectedProvider.json': {
+      provider: 'twilio'
+    },
+    'policies.json': {
+      policies: [ 'all-applications' ]
+    }
+  },
   'guardian/factors': {
     'sms.json': {
       name: 'sms',

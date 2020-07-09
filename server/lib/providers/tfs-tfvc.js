@@ -138,6 +138,7 @@ const getTree = (project, changesetId) =>
       hooks: getConfigurableTree(project, constants.HOOKS_DIRECTORY),
       databases: getConnectionsTree(project, changesetId),
       emails: getConfigurableTree(project, constants.EMAIL_TEMPLATES_DIRECTORY),
+      guardian: getConfigurableTree(project, constants.GUARDIAN_DIRECTORY),
       guardianFactors: getConfigurableTree(project, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
       guardianFactorTemplates: getConfigurableTree(project, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
       guardianFactorProviders: getConfigurableTree(project, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
@@ -157,6 +158,7 @@ const getTree = (project, changesetId) =>
         result.hooks,
         result.databases,
         result.emails,
+        result.guardian,
         result.guardianFactors,
         result.guardianFactorTemplates,
         result.guardianFactorProviders,
@@ -266,7 +268,15 @@ const getHooksOrRules = (changesetId, files, dir) => {
 };
 
 /*
- * Determine if we have the script, the metadata or both.
+ * Downloads a configurable by exact path.
+ */
+const getConfigurableByPath = (changesetId, files, name, filePath) => {
+  const file = { configFile: utils.findFileByPath(files, filePath) };
+  return downloadConfigurable(changesetId, name, file);
+};
+
+/*
+ * Downloads all configurables under a certain directory.
  */
 const getConfigurables = (changesetId, files, directory) => {
   const configurables = utils.getConfigurablesFiles(files, directory);
@@ -354,18 +364,6 @@ const getHtmlTemplates = (changesetId, files, dir, allowedNames) => {
 };
 
 /*
- * Get tenant settings.
- */
-const getTenant = (changesetId, files) =>
-  downloadConfigurable(changesetId, 'tenant', { configFile: _.find(files, f => utils.isTenantFile(f.path)) });
-
-/*
- * Get email provider.
- */
-const getEmailProvider = (changesetId, files) =>
-  downloadConfigurable(changesetId, 'emailProvider', { configFile: _.find(files, f => utils.isEmailProvider(f.path)) });
-
-/*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
 export const getChanges = ({ project, changesetId, mappings }) =>
@@ -377,15 +375,18 @@ export const getChanges = ({ project, changesetId, mappings }) =>
       })), null, 2)}`);
 
       const promises = {
-        tenant: getTenant(changesetId, files),
+        tenant: getConfigurableByPath(changesetId, files, 'tenant', 'tenant.json'),
         rules: getHooksOrRules(changesetId, files, constants.RULES_DIRECTORY),
         hooks: getHooksOrRules(changesetId, files, constants.HOOKS_DIRECTORY),
         databases: getDatabaseData(changesetId, files),
-        emailProvider: getEmailProvider(changesetId, files),
+        emailProvider: getConfigurableByPath(changesetId, files, 'emailProvider', path.join(constants.EMAIL_TEMPLATES_DIRECTORY, 'provider.json')),
         emailTemplates: getHtmlTemplates(changesetId, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
         guardianFactors: getConfigurables(changesetId, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_FACTORS_DIRECTORY)),
         guardianFactorTemplates: getConfigurables(changesetId, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_TEMPLATES_DIRECTORY)),
         guardianFactorProviders: getConfigurables(changesetId, files, path.join(constants.GUARDIAN_DIRECTORY, constants.GUARDIAN_PROVIDERS_DIRECTORY)),
+        guardianPhoneFactorMessageTypes: getConfigurableByPath(changesetId, files, 'guardianPhoneFactorMessageTypes', path.join(constants.GUARDIAN_DIRECTORY, 'phoneFactorMessageTypes.json')),
+        guardianPhoneFactorSelectedProvider: getConfigurableByPath(changesetId, files, 'guardianPhoneFactorSelectedProvider', path.join(constants.GUARDIAN_DIRECTORY, 'phoneFactorSelectedProvider.json')),
+        guardianPolicies: getConfigurableByPath(changesetId, files, 'guardianPolicies', path.join(constants.GUARDIAN_DIRECTORY, 'policies.json')),
         pages: getHtmlTemplates(changesetId, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
         roles: getConfigurables(changesetId, files, constants.ROLES_DIRECTORY),
         clients: getConfigurables(changesetId, files, constants.CLIENTS_DIRECTORY),
