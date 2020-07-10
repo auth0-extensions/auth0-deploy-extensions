@@ -30,7 +30,7 @@
   "auth0-extension": {
     "externals": [
       "@octokit/rest@17.1.4",
-      "auth0@2.23.0",
+      "auth0@2.27.0",
       "async@2.1.2",
       "auth0-source-control-extension-tools@4.1.1",
       "axios@0.18.0",
