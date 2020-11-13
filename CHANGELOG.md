@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.3] - 2020-11-05
+
+### auth0-bitbucket-deploy v3.5.3
+### auth0-github-deploy v3.5.3
+### auth0-gitlab-deploy v3.5.3
+### auth0-visualstudio-deploy v3.5.3
+- #### Changed
+  - Bump source-control-extension-tools@4.1.9 to fix pagination in API calls
+
 ## [3.5.0] - 2020-07-09
 
 ### auth0-bitbucket-deploy v3.5.0
@@ -16,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - MFA/Guardian Policies
   - MFA/Guardian Phone Factor Message Types
   - MFA/Guardian Phone Factor Selected Provider
-  
+
 ## [3.3.0] - 2020-04-09
 
 ### auth0-bitbucket-deploy v3.3.0
