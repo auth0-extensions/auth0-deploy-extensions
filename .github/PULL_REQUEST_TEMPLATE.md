@@ -16,9 +16,18 @@ If there were visual changes to the application with this change, please include
 
 ## 🛑 Runtime Dependencies
 
-> If you have updated the version of any package listed under `auth0-extension.externals` in `package.json`, please ensure the updated version has already been made available in [canirequire](https://auth0-extensions.github.io/canirequire/).
+> If you have updated the version of any package listed under
+> `auth0-extension.externals` in `package.json`, please ensure the updated
+> version has already been made available in
+> [canirequire](https://auth0-extensions.github.io/canirequire/).
+>
+> In this case, the version of this package also needs be bumped to at least a
+> new minor version to avoid Appliance customer automatically pick up a patch
+> release that requires new packages.
 
 ✅🚫 This change does not require any new version of packages
+
+✅🚫 The minor or major version of this package has been bumped because this change requires a new version of packages
 
 ✅🚫 All packages and versions required by this change have been included in [canirequire](https://auth0-extensions.github.io/canirequire/)
 
