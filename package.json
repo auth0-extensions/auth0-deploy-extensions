@@ -1,6 +1,6 @@
 {
   "name": "auth0-deploy-extensions",
-  "version": "3.5.4",
+  "version": "3.6.0",
   "description": "Auth0 Deployment Extensions",
   "engines": {
     "node": "5.9.0"
@@ -85,7 +85,7 @@
     "auth0-extension-tools": "1.4.5",
     "auth0-extension-ui": "^1.0.1",
     "auth0-oauth2-express": "^1.1.8",
-    "auth0-source-control-extension-tools": "^4.1.1",
+    "auth0-source-control-extension-tools": "^4.1.9",
     "axios": "^0.18.0",
     "babel": "^6.5.2",
     "babel-core": "^6.9.1",
