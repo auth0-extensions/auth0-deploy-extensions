@@ -44,6 +44,7 @@ function buildProvider(providerName) {
   try {
     npmRun.sync(command);
     npmRun.sync(`cp ./webtask.json ./dist/${providerName}/webtask.json`);
+    npmRun.sync(`cp ./dist/${providerName}/auth0-${providerName}-deploy.extension.*.js ./dist/${providerName}/bundle.js`);
     console.log(`Complete! See "dist/${providerName}"`);
   } catch (e) {
     console.log(`Error occurred while trying to build ${providerName}`, e);
