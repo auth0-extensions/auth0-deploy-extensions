@@ -11,7 +11,7 @@
   "logoUrl": "https://cdn.auth0.com/extensions/auth0-github-deploy/assets/logo.svg",
   "initialUrlPath": "/login",
   "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Pages, Rules and Database Connection scripts from being deployed from GitHub to Auth0",
-  "repository": "https://github.com/auth0-extensions/auth0-github-deploy",
+  "repository": "https://github.com/auth0-extensions/auth0-deploy-extensions",
   "keywords": ["auth0", "extension", "github"],
   "auth0": {
     "createClient": true,

@@ -11,7 +11,7 @@
   "logoUrl": "https://cdn.auth0.com/extensions/auth0-visualstudio-deploy/assets/logo.svg",
   "initialUrlPath": "/admins/login",
   "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Hosted Pages, Rules and Database Connection scripts from being deployed from Visual Studio Team Services to Auth0",
-  "repository": "https://github.com/auth0-extensions/auth0-visualstudio-deploy",
+  "repository": "https://github.com/auth0-extensions/auth0-deploy-extensions",
   "keywords": ["auth0", "extension", "visualstudio"],
   "auth0": {
     "createClient": true,
