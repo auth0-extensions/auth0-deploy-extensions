@@ -140,11 +140,12 @@ describe('unifyData', () => {
       });
   });
 
-  it('should unify database and not include customScripts if customization is disabled', (done) => {
+  it('should unify database and always include customScripts even if customization is disabled', (done) => {
     utils.unifyData(assets.dbScriptsNoCustom)
       .then((unified) => {
         expect(unified.databases[0].name).toEqual('Database');
-        expect(unified.databases[0].options.customScripts).toNotExist();
+        expect(unified.databases[0].options.customScripts).toBeAn('object');
+        expect(unified.databases[0].options.customScripts.login).toEqual('Database login script');
         expect(unified.databases[0].options.enabledDatabaseCustomization).toEqual(false);
 
         expect(unified.rules).toNotExist();

@@ -362,10 +362,13 @@ const unifyItem = (item, type, mappings) => {
 
       _.forEach(item.scripts, (script) => { customScripts[script.name] = extractFileContent(script.scriptFile, mappings, true); });
 
-      if (item.scripts && item.scripts.length && options.enabledDatabaseCustomization !== false) {
+      if (item.scripts && item.scripts.length) {
+        if (options.enabledDatabaseCustomization !== false) {
+          options.enabledDatabaseCustomization = true;
+        }
         options.customScripts = customScripts;
-        options.enabledDatabaseCustomization = true;
       }
+
 
       return ({ ...settings, options, strategy: 'auth0', name: item.name });
     }
