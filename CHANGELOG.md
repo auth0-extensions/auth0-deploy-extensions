@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.7.0] - 2020-12-02
+
+### auth0-bitbucket-deploy v3.7.0
+### auth0-github-deploy v3.7.0
+### auth0-gitlab-deploy v3.7.0
+### auth0-visualstudio-deploy v3.7.0
+- #### Changed
+  - Bump source-control-extension-tools@4.1.12, which fixes
+    - add webauth-roaming as valid MFA factor name (ESD-10050)
+    - log error if hooks deploy fails with 403 error code due to missing scope (ESD-9513)
+
+- #### Fixed
+  - Updated package repository URLs [#94]
+  - Custom db script should be included even when customization is disabled (ESD-10039)
+
 ## [3.6.0] - 2020-11-18
 
 ### auth0-bitbucket-deploy v3.6.0
