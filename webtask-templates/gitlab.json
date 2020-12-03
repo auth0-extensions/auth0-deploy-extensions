@@ -11,7 +11,7 @@
   "logoUrl": "https://cdn.auth0.com/extensions/auth0-gitlab-deploy/assets/logo.svg",
   "initialUrlPath": "/login",
   "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Hosted Pages,  Rules and Database Connection scripts from being deployed from GitLab to Auth0",
-  "repository": "https://github.com/auth0-extensions/auth0-gitlab-deploy",
+  "repository": "https://github.com/auth0-extensions/auth0-deploy-extensions",
   "keywords": ["auth0", "extension", "gitlab"],
   "auth0": {
     "createClient": true,
