@@ -80,7 +80,7 @@
   "dependencies": {
     "@octokit/rest": "^17.1.4",
     "async": "2.1.2",
-    "auth0": "^2.27.0",
+    "auth0": "^2.27.1",
     "auth0-extension-express-tools": "^2.1.0",
     "auth0-extension-tools": "1.4.5",
     "auth0-extension-ui": "^1.0.1",
