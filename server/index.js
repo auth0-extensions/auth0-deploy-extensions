@@ -94,7 +94,9 @@ module.exports = (configProvider, storageProvider) => {
       'read:hooks',
       'update:hooks',
       'delete:hooks',
-      'create:hooks'
+      'create:hooks',
+      'read:mfa_policies',
+      'update:mfa_policies'
     ].join(' ')
   }));
 
