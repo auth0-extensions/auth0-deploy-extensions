@@ -1,5 +1,6 @@
 {
   "title": "Bitbucket Deployments",
+  "deprecated": true,
   "name": "auth0-bitbucket-deploy",
   "version": "3.7.2",
   "preVersion": "2.10.0",

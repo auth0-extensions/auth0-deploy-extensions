@@ -1,5 +1,6 @@
 {
   "title": "GitHub Deployments",
+  "deprecated": true,
   "name": "auth0-github-deploy",
   "version": "3.7.2",
   "preVersion": "2.10.0",

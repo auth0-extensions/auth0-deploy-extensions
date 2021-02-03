@@ -1,5 +1,6 @@
 {
   "title": "Visual Studio Team Services Deployments",
+  "deprecated": true,
   "name": "auth0-visualstudio-deploy",
   "version": "3.7.2",
   "preVersion": "2.9.0",
