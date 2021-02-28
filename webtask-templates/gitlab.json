@@ -1,5 +1,6 @@
 {
   "title": "GitLab Deployments",
+  "deprecated": true,
   "name": "auth0-gitlab-deploy",
   "version": "3.7.2",
   "preVersion": "2.11.0",
